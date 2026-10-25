@@ -1,5 +1,13 @@
 import {randomUUID} from 'node:crypto';
 const COOLDOWN=60000;
+export function telegramFailure(data){
+ const description=data.description||'';
+ if(data.error_code===401)return 'Bot token rejected. Update TELEGRAM_BOT_TOKEN in Vercel and redeploy.';
+ if(/chat not found/i.test(description))return 'Chat not found. Open your bot, press Start, send hello, then get your chat ID again. Update TELEGRAM_CHAT_ID in Vercel and redeploy.';
+ if(/blocked/i.test(description))return 'Bot is blocked. Unblock it in Telegram and press Start.';
+ if(data.error_code===429)return 'Telegram rate limit reached. Wait before retrying.';
+ return 'Telegram rejected the test. Check the bot token, chat ID, and that you pressed Start.';
+}
 export function allowTestRequest(req){
  if(req.method!=='POST')return false;
  try{return new URL(req.headers.origin).host===req.headers.host;}catch{return false;}
@@ -15,7 +23,7 @@ export async function sendTelegramTest(s,env,save,request=fetch,now=Date.now()){
  try{
   const r=await request('https://api.telegram.org/bot'+env.TELEGRAM_BOT_TOKEN+'/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:env.TELEGRAM_CHAT_ID,text:lines.join('\n')}),signal:AbortSignal.timeout(12000)});
   const data=await r.json();
-  if(!r.ok||!data.ok)return {status:502,message:'Telegram rejected the test. Check the bot token, chat ID, and that you pressed Start in the bot chat.'};
+  if(!r.ok||!data.ok)return {status:502,message:telegramFailure(data)};
   s.events.unshift({at:new Date(now).toISOString(),text:'Telegram delivered: manual test'});s.events=s.events.slice(0,60);await save();
   return {status:200,message:'Test sent. Check your Telegram chat.'};
  }catch{return {status:502,message:'Could not confirm delivery. Check Telegram before retrying in one minute.'};}
