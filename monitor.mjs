@@ -2,6 +2,7 @@ import {CITIES,iso,cityQuote,moved,stale} from './core.mjs';
 import {fedNews,marketNews,mintNews,newsData,internationalQuote,spotQuote} from './feeds.mjs';
 import {fetchJewellers,JEWELLERS} from './jewellers.mjs';
 import {recentImportantNews} from './news-policy.mjs';
+import {fetchMintPrices} from './mint-prices.mjs';
 export function createMonitor(s,env,save,request=fetch){
 const free=env.FREE_FEEDS!=='false';
 const config={metals:env.JEWELLER_FEEDS!=='false',spot:free&&env.INTERNATIONAL_SPOT!=='false',
@@ -29,6 +30,7 @@ async function refresh(now){
    s.feedChecked['SpotINR/'+symbol]=iso(now);
   })));
   if(config.metals)await fetchJewellers(s,now,request,Math.max(300,Number(env.JEWELLER_POLL_SECONDS)||900)*1000);
+  if(config.metals)await fetchMintPrices(s,now,request);
   for(const site of JEWELLERS){
     const entry=s.jewellers?.[site.id];if(entry?.status!=='available')continue;
     for(const [metal,price] of Object.entries(entry.rates)){

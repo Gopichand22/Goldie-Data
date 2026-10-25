@@ -3,6 +3,12 @@ import assert from 'node:assert/strict';
 import {spotQuote,fedNews,newsData,TROY_GRAMS,internationalQuote} from './feeds.mjs';
 import {createMonitor} from './monitor.mjs';
 import {emptyState} from './lib/cloud.mjs';
+import {parseMintPrices} from './mint-prices.mjs';
+test('Mint prices use exact one-gram table rows and preserve source date',()=>{
+ const gold=parseMintPrices('Updated on October 23, 2026 05:18:00 PM IST<h2>24K Gold Rate in India Today (INR)</h2><table><tr><th>Gram</th><th>Today</th><th>Yesterday</th><th>Change</th></tr><tr><td>1</td><td>₹14,194.00</td></tr></table><h2>22K Gold Rate in India Today (INR)</h2><table><tr><th>Gram</th><th>Today</th><th>Yesterday</th><th>Change</th></tr><tr><td>1</td><td>₹13,001.70</td></tr></table>','gold');
+ assert.equal(gold.rates.gold24k,14194);assert.equal(gold.rates.gold22k,13001.7);assert.equal(gold.publishedDate,'2026-10-23T11:48:00.000Z');
+ assert.throws(()=>parseMintPrices('<p>Gold ring ₹50000</p>','gold'));
+});
 test('international spot preserves USD per troy ounce and rejects INR data',()=>{
  const now=Date.now(),j={symbol:'XAU',currency:'USD',price:4000,updatedAt:new Date(now).toISOString()};
  const q=internationalQuote(j,'XAU',now);assert.equal(q.price,4000);assert.equal(q.unit,'USD/troy oz');

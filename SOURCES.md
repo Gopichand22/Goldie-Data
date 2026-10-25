@@ -1,5 +1,7 @@
 # Indian jeweller sources
 
+**Mint rate highlights:** two top-row cards after global spot show India gold (24K primary, 22K secondary) and silver in INR/g from the user-provided Mint rate pages. Extraction reads the exact Today / one-gram table rows, preserving decimals and the published source timestamp. Checks run every 15 minutes. Publisher source dates can predate today's heading; cards display the published timestamp instead of claiming a fresh market quote. These are publisher India rates, separate from individual jeweller rates.
+
 **Market-news coverage:** free publisher RSS from Economic Times Commodities and Mint Markets/Money now supplements Fed releases, every 15 minutes. Set `MARKET_NEWS_FEEDS=false` to disable these publisher feeds. Headline/source/date/link only; the today/yesterday IST and importance filters remain active. Mint RSS is offered for personal noncommercial newsreader use; wider/commercial redistribution requires publisher permission. See https://www.livemint.com/rss.
 
 **Global INR and charts:** highlight cards include independent INR spot quotes per troy ounce and gram, alongside USD per troy ounce. USD spot samples are persisted in the existing history and plotted below the jeweller cards. Charts use actual captured timestamps, retain up to the existing seven-day/history-size limit, and wait for two samples rather than fabricating a historical series.
