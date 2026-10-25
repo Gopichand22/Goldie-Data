@@ -38,7 +38,7 @@ header { display:flex;justify-content:space-between;align-items:center;gap:12px;
 .wallhead { display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0; }
 .wallhead h1 { font-size:14px;font-weight:600;margin:0;letter-spacing:.1px; }
 .wallhead>.meta { font-size:10px; }
-.jewellers { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(146px,1fr);gap:var(--gap);min-width:0;min-height:0;align-content:stretch; }
+.jewellers { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,minmax(146px,1fr));grid-auto-rows:minmax(146px,1fr);gap:var(--gap);min-width:0;min-height:0;align-content:stretch; }
 .card { min-width:0;min-height:0;padding:8px 9px;border:1px solid var(--line);border-radius:5px;background:var(--surface);display:flex;flex-direction:column;gap:2px; }
 .cardhead { display:flex;justify-content:space-between;align-items:center;gap:5px;min-width:0;margin-bottom:2px; }
 .cardhead a { font-size:14px;line-height:1.2;font-weight:600;color:var(--ink);text-decoration:none; }
@@ -122,7 +122,7 @@ dialog::backdrop { background:#000b; }
  .dashboard { display:flex;flex-direction:column;padding:10px;gap:10px; }
  .highlights { height:auto;grid-template-columns:repeat(3,minmax(0,1fr)); }.highlight { min-height:102px; }
  .monitor-zone { display:flex;flex-direction:column;gap:10px; }.retailer-zone { display:block; }.wallhead { margin-bottom:8px; }
- .jewellers { grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:auto; }.card { min-height:160px; }
+ .jewellers { grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:none;grid-auto-rows:auto; }.card { min-height:160px; }
  .operations-zone { grid-template-columns:1fr 1fr;grid-template-rows:auto;gap:10px; }.panel { min-height:165px; }
  .analysis-zone { grid-template-columns:1fr 1fr; }.livechart { height:260px; }.analysis-zone .news { grid-column:1/-1;min-height:180px; }
  footer { min-height:32px;flex-wrap:wrap;padding:7px 12px; }
@@ -139,10 +139,10 @@ dialog::backdrop { background:#000b; }
 </style></head><body>
 <header><div class="brand"><span>◈</span> Metals Watch <span class="subtitle">INDIAN JEWELLER RATE MONITOR</span></div><div class="statusline"><div class="badge" id="health">Connecting</div><time id="clock">IST</time></div></header>
 <main class="dashboard" aria-label="Metals Watch market terminal">
-<section class="market-zone" aria-label="Market indicators"><div class="highlights"><div class="highlight"><span class="meta">KHAZANA · 22K GOLD / GRAM</span><strong id="khazanaGold">—</strong><span class="meta" id="khazanaGoldTime">Waiting for source</span></div><div class="highlight silver-highlight"><span class="meta">KHAZANA · SILVER / GRAM</span><strong id="khazanaSilver">—</strong><span class="meta" id="khazanaSilverTime">Waiting for source</span></div><div class="highlight"><span class="meta">GLOBAL GOLD · USD / TROY OZ</span><strong id="globalGold">—</strong><span class="inr-value" id="globalGoldInr">INR — / troy oz</span><span class="meta" id="globalGoldTime">Waiting for source</span></div><div class="highlight silver-highlight"><span class="meta">GLOBAL SILVER · USD / TROY OZ</span><strong id="globalSilver">—</strong><span class="inr-value" id="globalSilverInr">INR — / troy oz</span><span class="meta" id="globalSilverTime">Waiting for source</span></div><div class="highlight"><a class="meta" href="https://www.livemint.com/gold-prices" target="_blank" rel="noopener noreferrer">MINT · INDIA GOLD / GRAM</a><strong id="mintGold">—</strong><span class="inr-value" id="mintGold22">24K gold</span><span class="meta" id="mintGoldTime">Waiting for source</span></div><div class="highlight silver-highlight"><a class="meta" href="https://www.livemint.com/silver-prices" target="_blank" rel="noopener noreferrer">MINT · INDIA SILVER / GRAM</a><strong id="mintSilver">—</strong><span class="meta" id="mintSilverTime">Waiting for source</span></div></div></section>
+<section class="market-zone" aria-label="Market indicators"><div class="highlights"><div class="highlight"><span class="meta">KHAZANA · 22K GOLD / GRAM</span><strong id="khazanaGold">—</strong><span class="meta" id="khazanaGoldTime">Loading saved snapshot</span></div><div class="highlight silver-highlight"><span class="meta">KHAZANA · SILVER / GRAM</span><strong id="khazanaSilver">—</strong><span class="meta" id="khazanaSilverTime">Loading saved snapshot</span></div><div class="highlight"><span class="meta">GLOBAL GOLD · USD / TROY OZ</span><strong id="globalGold">—</strong><span class="inr-value" id="globalGoldInr">INR — / troy oz</span><span class="meta" id="globalGoldTime">Loading saved snapshot</span></div><div class="highlight silver-highlight"><span class="meta">GLOBAL SILVER · USD / TROY OZ</span><strong id="globalSilver">—</strong><span class="inr-value" id="globalSilverInr">INR — / troy oz</span><span class="meta" id="globalSilverTime">Loading saved snapshot</span></div><div class="highlight"><a class="meta" href="https://www.livemint.com/gold-prices" target="_blank" rel="noopener noreferrer">MINT · INDIA GOLD / GRAM</a><strong id="mintGold">—</strong><span class="inr-value" id="mintGold22">24K gold</span><span class="meta" id="mintGoldTime">Loading saved snapshot</span></div><div class="highlight silver-highlight"><a class="meta" href="https://www.livemint.com/silver-prices" target="_blank" rel="noopener noreferrer">MINT · INDIA SILVER / GRAM</a><strong id="mintSilver">—</strong><span class="meta" id="mintSilverTime">Loading saved snapshot</span></div></div></section>
 <section class="monitor-zone" aria-label="Retailers and monitoring">
 <section class="retailer-zone" aria-label="Indian jeweller rates"><div class="wallhead"><h1>Indian gold & silver rates</h1><span class="meta">₹ / gram · official website sources</span></div><div class="jewellers" id="jewellers"></div></section>
-<aside class="operations-zone" aria-label="Delivery and source monitoring"><section class="panel telegram"><div class="panelhead"><h2>Telegram delivery</h2><span class="tag">DAILY · IST</span></div><div class="times" id="times"></div><div id="tgStatus">Not connected</div><div class="meta" id="delivery"></div><div class="telegram-test-controls"><button class="chart-refresh" id="testTelegram">Test Telegram</button><span class="meta" id="telegramTestResult" role="status"></span></div></section>
+<aside class="operations-zone" aria-label="Delivery and source monitoring"><section class="panel telegram"><div class="panelhead"><h2>Telegram delivery</h2><span class="tag">DAILY · IST</span></div><div class="times" id="times"></div><div id="tgStatus">Loading configuration</div><div class="meta" id="delivery"></div><div class="telegram-test-controls"><button class="chart-refresh" id="testTelegram">Test Telegram</button><span class="meta" id="telegramTestResult" role="status"></span></div></section>
 <section class="panel system"><div class="panelhead"><button class="news-title" id="openSources" aria-haspopup="dialog">Source health &#8599;</button><span class="tag">AUTO SYNC</span></div><div class="systembody" id="connections"></div><div class="meta warn" id="feedError" role="status"></div></section>
 </aside>
 </section>
@@ -154,7 +154,10 @@ dialog::backdrop { background:#000b; }
 <dialog id="fundDialog" aria-labelledby="fundTitle"><div class="dialoghead"><h2 id="fundTitle">Published NAV history</h2><button class="close" id="closeFund" aria-label="Close NAV history">Close</button></div><div class="dialogbody"><div class="fund-controls"><span id="fundSummary"></span><label>Trend <select id="fundRange" aria-label="NAV history range"><option value="30">1 month</option><option value="90" selected>3 months</option><option value="365">1 year</option><option value="all">All history</option></select></label></div><div class="plot fund-history-plot" id="fundPlot" tabindex="0" aria-label="Published NAV trend; hover or use arrow keys for observations"></div><p class="meta" id="fundDetails"></p></div></dialog>
 <script>
 const $=id=>document.getElementById(id);
-let state=null,networkError=false,loading=false,newsIndex=0;
+let state=null,networkError=false,loading=false,newsIndex=0,cachedSnapshot=false;
+const snapshotKey='metals-watch:snapshot:v1';
+function restoreSnapshot(){try{const cached=JSON.parse(sessionStorage.getItem(snapshotKey)||'null');if(cached&&Number.isFinite(cached.savedAt)&&Date.now()>=cached.savedAt&&Date.now()-cached.savedAt<86400000&&cached.data?.config&&typeof cached.data.config==='object'){state=cached.data;cachedSnapshot=true;}}catch{}}
+function saveSnapshot(data){try{sessionStorage.setItem(snapshotKey,JSON.stringify({savedAt:Date.now(),data}));}catch{}}
 const sites=[['bhima','Bhima','https://www.bhimajewels.com/metal-rate'],['regal','Regal','https://www.regaljewellers.net/how-to-plan-gold-purchase/'],['kalyan','Kalyan','https://www.store.kalyanjewellers.net/gold-rate/india/en'],['khazana','Khazana','https://www.khazanajewellery.com/store-locator'],['josalukkas','Jos Alukkas','https://www.josalukkasonline.com/gold-rate-today/india'],['malabar','Malabar','https://www.malabargoldanddiamonds.com/in/pan-india/en/stores/store-list.html'],['joyalukkas','Joyalukkas','https://www.joyalukkas.in/goldrate'],['mukunda','Mukunda','https://www.mukundajewellery.com/'],['abharan','Abharan','https://abharan.com/']];
 const money=v=>Number.isFinite(v)?new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',minimumFractionDigits:0,maximumFractionDigits:2}).format(v):'—';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -265,6 +268,17 @@ async function refreshChart(symbol,prefix,color){
 }
 for(const spec of chartSpecs)$(spec[1]+'ChartRefresh').onclick=()=>refreshChart(...spec);
 function render(){
+ if(!state){
+  $('health').textContent=networkError?'LOAD FAILED':'LOADING SNAPSHOT';$('health').classList.toggle('ok',false);
+  $('tgStatus').textContent=networkError?'Configuration not loaded':'Loading Telegram configuration';$('delivery').textContent='';
+  $('connections').innerHTML='<div class="meta">Loading saved source health...</div>';
+  $('feedError').textContent=networkError?'Could not load saved data. Retrying automatically.':'Reading the latest saved backend snapshot...';
+  $('jewellers').setAttribute('aria-busy','true');$('jewellers').innerHTML=Array.from({length:7},()=>'<section class="card"><div class="meta">Loading saved rates...</div></section>').join('');
+  for(const prefix of ['gold','silver'])$(prefix+'ChartStatus').textContent='Loading saved price history...';
+  $('news').innerHTML='<div class="empty">Loading saved headlines...</div>';$('newsCount').textContent='News status pending';
+  $('lastUpdate').textContent=networkError?'Backend snapshot unavailable':'Loading saved dashboard';clock();return;
+ }
+ $('jewellers').setAttribute('aria-busy','false');
  const s=state||{config:{},errors:{}},entries=s.jewellers||{};
  const expired=s.lastRunAt&&Date.now()-Date.parse(s.lastRunAt)>180000;
  const visible=sites.filter(([id])=>['gold24k','gold22k','silver'].some(m=>Number.isFinite(entries[id]?.rates?.[m])&&entries[id].rates[m]>0));
@@ -290,12 +304,12 @@ function render(){
  $('khazanaSilver').textContent=money(khazana?.rates?.silver);
  const leadTime=khazana?'Fetched '+date(khazana.checkedAt)+(khazana.status!=='available'?' · SOURCE ERROR':''):'Waiting for source';
  $('khazanaGoldTime').textContent=leadTime;$('khazanaSilverTime').textContent=leadTime;
- $('health').textContent=networkError?'CONNECTION LOST':expired?'MONITOR OVERDUE':!state?'CONNECTING':available+'/'+sites.length+' SOURCES AVAILABLE';
- $('health').classList.toggle('ok',available===sites.length&&!networkError&&!expired);
+ $('health').textContent=networkError?'OFFLINE - SAVED DATA':cachedSnapshot?'CACHED - VERIFYING':expired?'MONITOR OVERDUE':available+'/'+sites.length+' SOURCES AVAILABLE';
+ $('health').classList.toggle('ok',available===sites.length&&!networkError&&!expired&&!cachedSnapshot);
  $('jewellers').innerHTML=visible.map(([id,name,url])=>{const e=entries[id],rates=e?.rates||{},stale=e?.checkedAt&&Date.now()-Date.parse(e.checkedAt)>1800000;const status=!e?'Waiting':e.status==='available'?(stale?'Stale':'Fetched'):e.status==='error'?'STALE ? Source error':'STALE ? Unavailable';return '<section class="card"><div class="cardhead"><a href="'+url+'" target="_blank" rel="noopener noreferrer">'+name+'</a><span class="state">'+status+'</span></div><div class="rates">'+[['gold24k','24K gold'],['gold22k','22K gold'],['silver','Silver']].map(([m,label])=>'<div><div class="rate-label">'+label+'</div><div class="rate">'+money(rates[m])+'</div></div>').join('')+'</div><div class="meta">Checked '+(e?date(e.checkedAt):'—')+'</div><div class="meta source-note">'+(e?.publishedDate?'Rate date '+date(e.publishedDate):'Rate date unverified · GST unknown')+'</div><div class="meta source-note" title="'+esc(e?.note||'')+'">'+esc(e?.note||'Awaiting website check')+'</div></section>';}).join('')||'<div class="empty">Waiting for prices. Jeweller cards appear automatically when at least one gold or silver rate is available.</div>';
  $('jewellers').innerHTML+=renderFundCards();
  $('connections').innerHTML='<div class="feedrow"><span>Jeweller sources</span><span>'+visible.length+' shown · '+(sites.length-visible.length)+' hidden</span></div><div class="feedrow"><span>Website checks</span><span>Every 15 min</span></div><div class="feedrow"><span>News window</span><span>Today + yesterday</span></div><div class="feedrow"><span>Telegram</span><span>'+(s.config.telegram?'Configured':'Not connected')+'</span></div>';
- $('feedError').textContent=networkError?'Backend unreachable; retaining last snapshot.':expired?'Scheduled monitor is overdue.':available<sites.length?'Some pages require regional URLs or a rendered-page adapter.':'All sources returned rates.';
+ $('feedError').textContent=networkError?'Backend unreachable; showing last saved snapshot. Source timestamps have not changed.':cachedSnapshot?'Showing saved data while checking the backend. Source timestamps have not changed.':expired?'Scheduled monitor is overdue.':available<sites.length?'Some pages require regional URLs or a rendered-page adapter.':'All sources returned rates.';
  $('tgStatus').textContent=!s.config.telegram?'Bot not connected':(s.pendingMessages||0)+' messages queued';
  const delivered=(s.events||[]).find(e=>e.text?.startsWith('Telegram delivered:'));$('delivery').textContent=delivered?'Last delivery '+date(delivered.at):s.config.telegram?'Scheduled summaries enabled':'Add bot credentials on the server';
  $('lastUpdate').textContent=s.lastPoll?'Backend checked '+date(s.lastPoll):'Waiting for first backend snapshot';
@@ -303,6 +317,7 @@ function render(){
  renderGlobalCharts();renderNews();renderSources();if(activeFund)renderFundHistory();clock();
 }
 $('testTelegram').onclick=async()=>{
+ if(!state){$('telegramTestResult').textContent='Wait for the dashboard configuration to load.';return;}
  const button=$('testTelegram'),message=$('telegramTestResult');button.disabled=true;button.textContent='Sending…';message.textContent='';
  try{
   for(let attempt=0;attempt<6;attempt++){
@@ -315,11 +330,11 @@ $('testTelegram').onclick=async()=>{
  finally{button.disabled=false;button.textContent='Test Telegram';}
 };
 function clock(){const now=new Date();$('clock').textContent=now.toLocaleTimeString('en-IN',{timeZone:'Asia/Kolkata',hour12:false})+' IST';const parts=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(now),h=Number(parts.find(p=>p.type==='hour').value),m=Number(parts.find(p=>p.type==='minute').value),hours=[8,10,14,16,18],next=hours.find(x=>x*60>h*60+m)??8;$('times').innerHTML=hours.map(x=>'<span class="time '+(x===next?'next':'')+'">'+String(x).padStart(2,'0')+':00</span>').join('');}
-async function load(){if(loading)return;loading=true;try{const r=await fetch('/api/status',{cache:'no-store',signal:AbortSignal.timeout(10000)});if(!r.ok)throw Error();const data=await r.json();if(!data.config)throw Error();state=data;networkError=false;}catch{networkError=true;}finally{loading=false;render();}}
+async function load(){if(loading)return;loading=true;try{const r=await fetch('/api/status',{cache:'no-store',signal:AbortSignal.timeout(10000)});if(!r.ok)throw Error();const data=await r.json();if(!data.config)throw Error();state=data;cachedSnapshot=false;networkError=false;saveSnapshot(data);}catch{networkError=true;}finally{loading=false;render();}}
 $('jewellers').addEventListener('click',e=>{const button=e.target?.closest?.('[data-fund]');if(button){activeFund=Number(button.dataset.fund);renderFundHistory();$('fundDialog').showModal();}});
 $('fundRange').onchange=renderFundHistory;$('closeFund').onclick=()=>{$('fundDialog').close();activeFund=null;};$('fundDialog').addEventListener('close',()=>{activeFund=null;});
 $('openSources').onclick=()=>{renderSources();$('sourcesDialog').showModal();};$('closeSources').onclick=()=>$('sourcesDialog').close();
 $('openNews').onclick=()=>{renderNews();$('newsDialog').showModal();};$('closeNews').onclick=()=>$('newsDialog').close();
 $('newsDialog').addEventListener('click',e=>{if(e.target===$('newsDialog')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close();}});
-render();load();setInterval(load,30000);setInterval(clock,1000);setInterval(()=>{newsIndex++;renderNews();},18000);if(typeof window!=='undefined')window.addEventListener('resize',renderNews);document.addEventListener('visibilitychange',()=>{if(!document.hidden)load();});
+restoreSnapshot();render();load();setInterval(load,30000);setInterval(clock,1000);setInterval(()=>{if(state){newsIndex++;renderNews();}},18000);if(typeof window!=='undefined')window.addEventListener('resize',()=>{if(state)renderNews();});document.addEventListener('visibilitychange',()=>{if(!document.hidden)load();});
 </script></body></html>

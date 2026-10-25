@@ -2,6 +2,29 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
+
+test('refresh restores saved prices immediately, verifies in background, and retains them on failure',async()=>{
+ const html=await readFile(new URL('./dist/index.html',import.meta.url),'utf8'),script=html.match(/<script>([\s\S]*?)<\/script>/)[1];
+ const storage=new Map();
+ function page(){
+  const nodes=new Map([...html.matchAll(/\bid="([^"]+)"/g)].map(([,id])=>[id,{textContent:'',innerHTML:'',style:{},classList:{toggle(){}},setAttribute(){},addEventListener(){},showModal(){},close(){}}]));
+  let resolveRequest;
+  const context=vm.createContext({document:{getElementById:id=>nodes.get(id),addEventListener(){}},sessionStorage:{getItem:key=>storage.get(key)||null,setItem:(key,value)=>storage.set(key,value)},Intl,Date,URL,AbortSignal,setInterval(){},fetch:()=>new Promise(resolve=>{resolveRequest=resolve;})});
+  vm.runInContext(script,context);
+  return {nodes,respond:value=>resolveRequest(value)};
+ }
+ const first=page();assert.equal(first.nodes.get('health').textContent,'LOADING SNAPSHOT');
+ assert.match(first.nodes.get('tgStatus').textContent,/Loading Telegram/);assert.doesNotMatch(first.nodes.get('jewellers').innerHTML,/Unavailable/);
+ const at=new Date().toISOString(),data={config:{telegram:true},errors:{},news:[],history:[],lastPoll:at,jewellers:{khazana:{rates:{gold22k:13070},checkedAt:at,status:'available'}}};
+ first.respond({ok:true,json:async()=>data});await new Promise(resolve=>setImmediate(resolve));
+ assert.match(first.nodes.get('khazanaGold').textContent,/13,070/);assert.equal(storage.size,1);
+ const refreshed=page();assert.equal(refreshed.nodes.get('health').textContent,'CACHED - VERIFYING');
+ assert.match(refreshed.nodes.get('khazanaGold').textContent,/13,070/);assert.equal(refreshed.nodes.get('tgStatus').textContent,'0 messages queued');
+ refreshed.respond({ok:false});await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(refreshed.nodes.get('health').textContent,'OFFLINE - SAVED DATA');assert.match(refreshed.nodes.get('khazanaGold').textContent,/13,070/);
+ const record=JSON.parse([...storage.values()][0]);record.savedAt=Date.now()-2*86400000;storage.set([...storage.keys()][0],JSON.stringify(record));
+ assert.equal(page().nodes.get('health').textContent,'LOADING SNAPSHOT');
+});
 test('dashboard renders fetched INR prices, source cards and populated global charts',async()=>{
  const html=await readFile(new URL('./dist/index.html',import.meta.url),'utf8');
  const nodes=new Map([...html.matchAll(/\bid="([^"]+)"/g)].map(([,id])=>[id,{textContent:'',innerHTML:'',title:'',style:{},classList:{toggle(){}},setAttribute(){},addEventListener(){},showModal(){},close(){}}]));
