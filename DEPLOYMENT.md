@@ -1,5 +1,7 @@
 # Vercel + Supabase
 
+**Dashboard login removed:** `/` and `/api/status` are public. `APP_PASSWORD` is no longer used or required. `/api/cron` still requires `CRON_SECRET` (minimum 20 characters); keep the matching Supabase Vault secret. Old login instructions below are superseded. Database and Telegram credentials stay server-side.
+
 **Current source configuration:** see [SOURCES.md](SOURCES.md). The app now uses `JEWELLER_FEEDS=true` and `JEWELLER_POLL_SECONDS=900` for Indian jeweller website rates. International spot and the previous city API adapter are no longer active. The Supabase/Vercel deployment and authentication steps below still apply; previous spot-feed descriptions are superseded by SOURCES.md. Use `FREE_FEEDS=true` only for the free Fed news feed; optional `NEWSDATA_API_KEY` or `NEWS_API_KEY` adds broader news coverage.
 
 ## Local development

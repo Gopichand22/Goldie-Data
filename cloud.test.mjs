@@ -36,9 +36,10 @@ test('lease is released on failed state read',async()=>{
  const calls=[];await assert.rejects(runCloud({}, {rpc:async n=>{calls.push(n);return true;},read:async()=>{throw Error('offline');}},Date.now()));
  assert.deepEqual(calls,['metals_claim','metals_release']);
 });
-test('endpoints fail closed and cron does not accept the dashboard password',()=>{
+test('dashboard is public while cron requires a configured bearer secret',()=>{
  const res={setHeader(){},end(){}};const secret='a-long-enough-test-secret';
- assert.equal(protect({headers:{}},res,false,{}),false);assert.equal(res.statusCode,503);
+ assert.equal(protect({headers:{}},res,false,{}),true);
+ assert.equal(protect({headers:{}},res,true,{}),false);assert.equal(res.statusCode,503);
  assert.equal(protect({headers:{authorization:'Basic '+Buffer.from('metals:'+secret).toString('base64')}},res,true,{CRON_SECRET:secret}),false);
  assert.equal(protect({headers:{authorization:'Bearer '+secret}},res,true,{CRON_SECRET:secret}),true);
 });

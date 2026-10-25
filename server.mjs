@@ -3,7 +3,6 @@ import {recentImportantNews} from './news-policy.mjs';
 import http from 'node:http';
 import {readFile,writeFile,mkdir,rename} from 'node:fs/promises';
 import {resolve} from 'node:path';
-import {timingSafeEqual} from 'node:crypto';
 import {CITIES,ist,iso,dueSlots,cityQuote,moved,stale,summary,finitePrice} from './core.mjs';
 const env=process.env, dir=resolve(env.DATA_DIR||'data'), started=Date.now();
 const poll=Math.max(60,Number(env.POLL_SECONDS)||60)*1000;
@@ -26,18 +25,9 @@ async function tick(){
     await save();await deliver(Date.now());
   }catch{event('Monitor error; retrying on next cycle');}finally{busy=false;}
 }
-const password=env.APP_PASSWORD||'';
-if((env.HOST||'127.0.0.1')!=='127.0.0.1'&&password.length<20)throw Error('Set APP_PASSWORD to at least 20 characters for remote access');
-function authorized(req){
-  if(!password)return true;
-  const expected=Buffer.from('Basic '+Buffer.from('metals:'+password).toString('base64'));
-  const actual=Buffer.from(req.headers.authorization||'');
-  return expected.length===actual.length&&timingSafeEqual(expected,actual);
-}
 const html=await readFile(new URL('./dist/index.html',import.meta.url));
 const server=http.createServer(async(req,res)=>{
   const headers={'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','Content-Security-Policy':"default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'"};
-  if(!authorized(req)){res.writeHead(401,{...headers,'WWW-Authenticate':'Basic realm="Metals Watch", charset="UTF-8"'});res.end('Sign in with username metals and your APP_PASSWORD');return;}
   if(req.method!=='GET'){res.writeHead(405,headers);res.end();return;}
   if(req.url==='/api/status'){
     res.writeHead(200,{...headers,'Content-Type':'application/json'});
