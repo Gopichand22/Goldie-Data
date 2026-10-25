@@ -2,6 +2,7 @@ import {createHash} from 'node:crypto';
 import {iso,finitePrice} from './core.mjs';
 import {internationalQuote,spotQuote,fedNews} from './feeds.mjs';
 import {recentImportantNews} from './news-policy.mjs';
+import {fundHealth} from './funds.mjs';
 
 export const NEWS_SOURCES=[
  {id:'Fed',name:'Federal Reserve',url:'https://www.federalreserve.gov/feeds/press_monetary.xml',host:'www.federalreserve.gov'},
@@ -52,7 +53,7 @@ export function sourceStatus(s,now=Date.now()){
  const entries=Object.entries(s.sourceHealth||{}).map(([id,h])=>({id,...h,status:h.status==='disabled'?'disabled':h.error?'error':!h.lastSuccess||now-Date.parse(h.lastSuccess)>h.staleAfter||h.quoteStale||(id.startsWith('News/')&&(!h.sourceAt||now-Date.parse(h.sourceAt)>2*86400000))?'stale':'fresh'}));
  for(const [id,e] of Object.entries(s.jewellers||{}))entries.push({id:'Jeweller/'+id,name:e.name||id,lastSuccess:e.status==='available'?e.checkedAt:e.lastGoodAt,sourceAt:e.publishedDate||null,status:e.status!=='available'?'error':now-Date.parse(e.checkedAt)>1800000?'stale':'fresh',error:e.status!=='available'?e.note:null,note:!e.publishedDate?'Quote date unverified':null});
  for(const [id,e] of Object.entries(s.mintRates||{}))entries.push({id:'MintPrice/'+id,name:'Mint '+id,lastSuccess:e.status==='error'?e.lastGoodAt:e.checkedAt,sourceAt:e.publishedDate||null,status:e.status==='error'?'error':!e.publishedDate||now-Date.parse(e.publishedDate)>86400000?'stale':'fresh',error:e.status==='error'?e.note:null});
- return entries;
+ return [...entries,...Object.values(s.funds||{}).map(f=>fundHealth(f,now))];
 }
 
 export function createIntegrations(s,env,request){

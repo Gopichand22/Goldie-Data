@@ -17,7 +17,7 @@ test('international spot preserves USD per troy ounce and rejects INR data',()=>
 test('global monitor captures USD history and independent INR quotes without duplicate samples',async()=>{
  const s=emptyState(),now=Date.now();s.feedChecked={Fed:new Date(now).toISOString()};
  const request=async url=>({ok:true,text:async()=>'<rss><channel></channel></rss>',json:async()=>({symbol:url.includes('XAU')?'XAU':'XAG',currency:url.endsWith('/INR')?'INR':'USD',price:url.endsWith('/INR')?310000:4000,updatedAt:new Date(now).toISOString()})});
- const m=createMonitor(s,{JEWELLER_FEEDS:'false',MARKET_NEWS_FEEDS:'false'},async()=>{},request);
+ const m=createMonitor(s,{FUND_NAVS:'false',JEWELLER_FEEDS:'false',MARKET_NEWS_FEEDS:'false'},async()=>{},request);
  await m.refresh(now);await m.refresh(now+60000);
  assert.equal(s.history.filter(p=>p.id.startsWith('global/USD/')).length,2);
  assert.equal(s.spot.XAU.currency,'USD');assert.equal(s.spotInr.XAU.ouncePrice,310000);
@@ -41,12 +41,12 @@ test('free news API retains explicit 12-hour delay label',()=>{
 test('no-key news monitor caches RSS and filters old headlines without international price requests',async()=>{
  const s=emptyState(),now=Date.now(),calls=[];
  const request=async url=>{calls.push(String(url));return {ok:true,json:async()=>({symbol:String(url).includes('XAU')?'XAU':'XAG',currency:'INR',price:100000,updatedAt:new Date(now).toISOString()}),text:async()=>rss};};
- const m=createMonitor(s,{JEWELLER_FEEDS:'false',INTERNATIONAL_SPOT:'false',MARKET_NEWS_FEEDS:'false'},async()=>{},request);await m.refresh(now);await m.refresh(now+60000);
+ const m=createMonitor(s,{FUND_NAVS:'false',JEWELLER_FEEDS:'false',INTERNATIONAL_SPOT:'false',MARKET_NEWS_FEEDS:'false'},async()=>{},request);await m.refresh(now);await m.refresh(now+60000);
  assert.equal(calls.length,3);assert.equal(Object.keys(s.quotes).length,0);assert.equal(Object.keys(s.spot).length,0);assert.equal(s.news.length,0);
  assert.equal(s.history.length,0);assert.equal(m.config.spot,false);
 });
 test('news failure records the provider error',async()=>{
  const s=emptyState();
- await createMonitor(s,{JEWELLER_FEEDS:'false',INTERNATIONAL_SPOT:'false',MARKET_NEWS_FEEDS:'false'},async()=>{},async()=>({ok:false,status:429})).refresh(Date.now());
+ await createMonitor(s,{FUND_NAVS:'false',JEWELLER_FEEDS:'false',INTERNATIONAL_SPOT:'false',MARKET_NEWS_FEEDS:'false'},async()=>{},async()=>({ok:false,status:429})).refresh(Date.now());
  assert.match(s.errors['News/Fed'].message,/429/);
 });

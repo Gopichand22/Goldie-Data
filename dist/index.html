@@ -49,6 +49,13 @@ header { display:flex;justify-content:space-between;align-items:center;gap:12px;
 .rate-label { font-size:11px;color:var(--muted); }.rate { font-size:18px;line-height:1;font-weight:550;color:var(--gold);white-space:nowrap;letter-spacing:-.2px; }
 .card .meta { font-size:10px;line-height:1.35;overflow-wrap:anywhere; }
 .card .source-note { display:block;white-space:normal;overflow:visible;text-overflow:clip;-webkit-line-clamp:unset; }
+.fund-title { appearance:none;border:0;background:none;color:var(--ink);font-size:12px;font-weight:600;text-align:left;padding:0;line-height:1.25; }
+.fund-title:hover { color:var(--gold); }.fund-nav { font-size:21px;font-weight:600;line-height:1.1;color:var(--gold); }
+.fund-card.silver-fund .fund-nav { color:var(--silver); }.fund-change { font-size:10px;line-height:1.2; }
+.fund-mini { width:100%;height:23px;display:block;flex-shrink:0; }.fund-card { gap:3px; }
+.fund-card .up { color:var(--green); }.fund-card .down { color:var(--negative); }
+.fund-controls { display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0; }
+.fund-controls select { background:var(--elevated);color:var(--ink);border:1px solid var(--line);padding:5px; }.fund-history-plot { height:280px;max-height:40vh; }
 .operations-zone { display:grid;grid-template-rows:minmax(0,1fr) minmax(0,1fr);gap:var(--gap); }
 .panel,.livechart { min-width:0;min-height:0;border:1px solid var(--line);border-radius:5px;background:var(--surface);padding:10px 12px;display:flex;flex-direction:column; }
 .panelhead { display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px; }
@@ -136,14 +143,15 @@ dialog::backdrop { background:#000b; }
 <section class="monitor-zone" aria-label="Retailers and monitoring">
 <section class="retailer-zone" aria-label="Indian jeweller rates"><div class="wallhead"><h1>Indian gold & silver rates</h1><span class="meta">₹ / gram · official website sources</span></div><div class="jewellers" id="jewellers"></div></section>
 <aside class="operations-zone" aria-label="Delivery and source monitoring"><section class="panel telegram"><div class="panelhead"><h2>Telegram delivery</h2><span class="tag">DAILY · IST</span></div><div class="times" id="times"></div><div id="tgStatus">Not connected</div><div class="meta" id="delivery"></div><div class="telegram-test-controls"><button class="chart-refresh" id="testTelegram">Test Telegram</button><span class="meta" id="telegramTestResult" role="status"></span></div></section>
-<section class="panel system"><div class="panelhead"><button class="news-title" id="openSources" aria-haspopup="dialog">Source health ?</button><span class="tag">AUTO SYNC</span></div><div class="systembody" id="connections"></div><div class="meta warn" id="feedError" role="status"></div></section>
+<section class="panel system"><div class="panelhead"><button class="news-title" id="openSources" aria-haspopup="dialog">Source health &#8599;</button><span class="tag">AUTO SYNC</span></div><div class="systembody" id="connections"></div><div class="meta warn" id="feedError" role="status"></div></section>
 </aside>
 </section>
 <section class="analysis-zone" aria-label="Global price charts and market intelligence"><div class="livechart"><div class="charthead"><div><span>GLOBAL GOLD</span><div class="chart-value" id="goldChartValue">—</div></div><div class="chart-tools"><span class="meta" id="goldChange">USD / troy oz</span><button class="chart-refresh" id="goldChartRefresh" aria-label="Refresh gold chart" title="Reload latest saved price history">↻ Refresh</button></div></div><div class="chart-status" id="goldChartStatus" aria-live="polite">Live captures · USD / troy ounce</div><div class="plot" id="goldPlot"></div></div><div class="livechart"><div class="charthead"><div><span>GLOBAL SILVER</span><div class="chart-value" id="silverChartValue">—</div></div><div class="chart-tools"><span class="meta" id="silverChange">USD / troy oz</span><button class="chart-refresh" id="silverChartRefresh" aria-label="Refresh silver chart" title="Reload latest saved price history">↻ Refresh</button></div></div><div class="chart-status" id="silverChartStatus" aria-live="polite">Live captures · USD / troy ounce</div><div class="plot" id="silverPlot"></div></div><section class="panel news"><div class="panelhead"><button class="news-title" id="openNews" aria-haspopup="dialog">Market & policy intelligence ↗</button></div><div class="newsitems" id="news"></div><div class="newsfoot" id="newsCount">Today & yesterday · IST · material events only</div></section></section>
 </main>
 <footer><span id="lastUpdate">Waiting for backend</span><span>Jewellers: INR/g · International spot: USD/troy oz</span></footer>
 <dialog id="newsDialog" aria-labelledby="newsDialogTitle"><div class="dialoghead"><h2 id="newsDialogTitle">Market & policy intelligence</h2><button class="close" id="closeNews" aria-label="Close news dialog">Close ✕</button></div><div class="dialogbody"><div class="window" id="newsWindow"></div><div id="allNews"></div></div></dialog>
-<dialog id="sourcesDialog" aria-labelledby="sourcesTitle"><div class="dialoghead"><h2 id="sourcesTitle">Source health ? fetch and publication times</h2><button class="close" id="closeSources">Close ?</button></div><div class="dialogbody" id="sourceDetails"></div></dialog>
+<dialog id="sourcesDialog" aria-labelledby="sourcesTitle"><div class="dialoghead"><h2 id="sourcesTitle">Source health ? fetch and publication times</h2><button class="close" id="closeSources">Close</button></div><div class="dialogbody" id="sourceDetails"></div></dialog>
+<dialog id="fundDialog" aria-labelledby="fundTitle"><div class="dialoghead"><h2 id="fundTitle">Published NAV history</h2><button class="close" id="closeFund" aria-label="Close NAV history">Close</button></div><div class="dialogbody"><div class="fund-controls"><span id="fundSummary"></span><label>Trend <select id="fundRange" aria-label="NAV history range"><option value="30">1 month</option><option value="90" selected>3 months</option><option value="365">1 year</option><option value="all">All history</option></select></label></div><div class="plot fund-history-plot" id="fundPlot" tabindex="0" aria-label="Published NAV trend; hover or use arrow keys for observations"></div><p class="meta" id="fundDetails"></p></div></dialog>
 <script>
 const $=id=>document.getElementById(id);
 let state=null,networkError=false,loading=false,newsIndex=0;
@@ -152,6 +160,43 @@ const money=v=>Number.isFinite(v)?new Intl.NumberFormat('en-IN',{style:'currency
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const date=v=>v&&Number.isFinite(Date.parse(v))?new Date(v).toLocaleString('en-IN',{timeZone:'Asia/Kolkata',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})+' IST':'Unknown';
 const day=t=>new Date(t+330*60000).toISOString().slice(0,10);
+const fundSpecs=[{code:150714,name:'UTI Gold FoF - Direct Growth',metal:'gold'},{code:151731,name:'UTI Silver FoF - Direct Growth',metal:'silver'}];
+const navMoney=v=>Number.isFinite(v)?new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',minimumFractionDigits:4,maximumFractionDigits:5}).format(v):'Unavailable';
+const navLabel=v=>v&&/^\d{4}-\d{2}-\d{2}$/.test(v)?new Date(v+'T00:00:00Z').toLocaleDateString('en-IN',{timeZone:'UTC',day:'2-digit',month:'short',year:'numeric'}):'Date unavailable';
+let activeFund=null;
+function fundIsStale(f){return !!f&&(f.error||!f.lastSuccess||Date.now()-Date.parse(f.lastSuccess)>36*3600000||(state?.sources||[]).some(h=>h.id==='NAV/'+f.code&&h.status!=='fresh'));}
+function fundChange(f){return Number.isFinite(f?.change)&&Number.isFinite(f?.changePercent)?(f.change>=0?'+':'-')+navMoney(Math.abs(f.change))+' / '+(f.changePercent>=0?'+':'')+f.changePercent.toFixed(2)+'%':'Change unavailable';}
+function fundPoints(f){return (f?.history||[]).filter(p=>Number.isFinite(p.nav)&&p.nav>0&&/^\d{4}-\d{2}-\d{2}$/.test(p.date)).slice().sort((a,b)=>a.date.localeCompare(b.date));}
+function fundMini(f,color){
+ const points=fundPoints(f).slice(-60);if(points.length<2)return '<div class="meta">History pending</div>';
+ const values=points.map(p=>p.nav),lo=Math.min(...values),span=Math.max(...values)-lo||1;
+ const path=points.map((p,i)=>(i?'L':'M')+(i/(points.length-1)*240).toFixed(2)+','+(21-(p.nav-lo)/span*19).toFixed(2)).join(' ');
+ return '<svg class="fund-mini" viewBox="0 0 240 24" preserveAspectRatio="none" aria-hidden="true"><path d="'+path+'" stroke="'+color+'" stroke-width="1.5" fill="none" vector-effect="non-scaling-stroke"/></svg>';
+}
+function renderFundCards(){return fundSpecs.map(spec=>{
+ const f=state?.funds?.[spec.code],stale=fundIsStale(f),hasNav=Number.isFinite(f?.nav);
+ return '<section class="card fund-card '+(spec.metal==='silver'?'silver-fund':'')+'"><div class="cardhead"><button class="fund-title" data-fund="'+spec.code+'" aria-label="Open '+spec.name+' published NAV history">'+spec.name+'</button><span class="state">'+(stale?'STALE':'NAV')+'</span></div><div class="fund-nav">'+navMoney(f?.nav)+'</div><div class="fund-change '+(f?.change>=0?'up':'down')+'">'+esc(fundChange(f))+'</div><div class="meta">'+(hasNav?'NAV '+navLabel(f.navDate):'Awaiting published NAV')+' - INR/unit</div>'+fundMini(f,spec.metal==='silver'?'#B4CEDF':'#E7BD67')+'<div class="meta">Daily NAV - select title for history</div></section>';
+ }).join('');}
+function renderFundHistory(){
+ const f=state?.funds?.[activeFund],root=$('fundPlot');
+ $('fundTitle').textContent=f?.schemeName||fundSpecs.find(s=>s.code===activeFund)?.name||'Published NAV history';
+ $('fundSummary').textContent=navMoney(f?.nav)+' / unit - NAV '+navLabel(f?.navDate)+(fundIsStale(f)?' - STALE':'');
+ $('fundDetails').textContent='Published daily NAV, not a real-time trading price. '+fundChange(f)+(f?.previousDate?' versus '+navLabel(f.previousDate):'')+'. Scheme '+activeFund+'. MFAPI transport; AMFI authoritative reference. Last successful fetch: '+date(f?.lastSuccess)+(f?.error?'. Error: '+f.error:'');
+ const all=fundPoints(f),range=$('fundRange').value||'90',end=all.at(-1),cutoff=end?Date.parse(end.date+'T00:00:00Z')-Number(range)*86400000:0;
+ const points=range==='all'?all:all.filter(p=>Date.parse(p.date+'T00:00:00Z')>=cutoff);
+ if(points.length<2){root.innerHTML='<div class="empty">At least two published NAV observations are required for a trend.</div>';root.onpointermove=null;root.onkeydown=null;return;}
+ const values=points.map(p=>p.nav),lo=Math.min(...values),hi=Math.max(...values),pad=Math.max((hi-lo)*.1,hi*.0001),min=lo-pad,max=hi+pad;
+ const start=Date.parse(points[0].date+'T00:00:00Z'),span=Date.parse(end.date+'T00:00:00Z')-start||1;
+ const x=p=>12+(Date.parse(p.date+'T00:00:00Z')-start)/span*520,y=p=>160-(p.nav-min)/(max-min)*140;
+ const step=Math.max(1,Math.ceil(points.length/600)),shown=points.filter((_,i)=>i%step===0||i===points.length-1);
+ const path=shown.map((p,i)=>(i?'L':'M')+x(p).toFixed(2)+','+y(p).toFixed(2)).join(' '),color=f.metal==='silver'?'#B4CEDF':'#E7BD67';
+ root.innerHTML='<div class="chart-canvas"><svg viewBox="0 0 600 180" preserveAspectRatio="none" role="img" aria-label="Published daily NAV history"><path d="'+path+'" stroke="'+color+'" stroke-width="1.8" fill="none" vector-effect="non-scaling-stroke"/><line class="chart-crosshair" x1="0" x2="0" y1="12" y2="170" visibility="hidden"/></svg><div class="price-axis"><span>'+navMoney(max)+'</span><span>'+navMoney((min+max)/2)+'</span><span>'+navMoney(min)+'</span></div><div class="chart-tooltip" hidden></div></div><div class="chart-range"><span>'+navLabel(points[0].date)+'</span><span>'+points.length+' published NAVs</span><span>'+navLabel(end.date)+'</span></div>';
+ let selected=points.length-1;
+ function show(index){selected=Math.max(0,Math.min(points.length-1,index));const p=points[selected],tip=root.querySelector('.chart-tooltip'),line=root.querySelector('.chart-crosshair');tip.hidden=false;tip.innerHTML='<strong>'+navMoney(p.nav)+' / unit</strong><small>NAV '+navLabel(p.date)+'</small>';line.setAttribute('x1',x(p));line.setAttribute('x2',x(p));line.setAttribute('visibility','visible');}
+ root.onpointermove=e=>{const rect=root.querySelector('svg').getBoundingClientRect(),target=(e.clientX-rect.left)/rect.width*600;let nearest=0;for(let i=1;i<points.length;i++)if(Math.abs(x(points[i])-target)<Math.abs(x(points[nearest])-target))nearest=i;show(nearest);};
+ root.onpointerleave=()=>{root.querySelector('.chart-tooltip').hidden=true;root.querySelector('.chart-crosshair').setAttribute('visibility','hidden');};
+ root.onkeydown=e=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key)){e.preventDefault();show(e.key==='Home'?0:e.key==='End'?points.length-1:selected+(e.key==='ArrowLeft'?-1:1));}};
+}
 function recentNews(){const now=Date.now(),days=[day(now),day(now-86400000)];return (state?.news||[]).filter(n=>{try{return Date.parse(n.at)<=now&&days.includes(day(Date.parse(n.at)))&&['https:','http:'].includes(new URL(n.url).protocol);}catch{return false;}});}
 function quoteStale(symbol,q,inr=false){const id=(inr?'SpotINR/':'Spot/')+symbol;return !!q&&(q.stale||Date.now()-Date.parse(q.at)>180000||!q.at||(!String(q.source).startsWith('XAUS')&&(state?.sources||[]).some(h=>h.id===id&&h.status==='error')));}
 function article(n){return '<article class="article"><div class="meta">'+esc(n.publisher||n.source)+' ? '+date(n.publishedAt||n.at)+'</div><a href="'+esc(n.url)+'" target="_blank" rel="noopener noreferrer">'+esc(n.title)+'</a><div class="meta">Via '+esc(n.source)+' ? fetched '+date(n.fetchedAt)+((!n.fetchedAt||Date.now()-Date.parse(n.fetchedAt)>1800000||(state?.sources||[]).some(h=>h.name===n.source&&h.status==='error'))?' ? STALE':'')+'</div></article>';}
@@ -170,7 +215,7 @@ function renderNews(){
 }
 function renderSources(){
  const sources=state?.sources||[];
- $('sourceDetails').innerHTML=sources.map(h=>'<article class="article"><strong>'+esc(h.name)+'</strong> ? '+esc(h.status)+(h.status==='error'&&h.lastSuccess?' ? last-known-good data is stale':'')+'<div class="meta">Last successful fetch: '+date(h.lastSuccess)+'<br>Source publication / quote: '+date(h.sourceAt)+(h.sourceAt?'':' (not supplied or not verifiable)')+(h.error?'<br>Error: '+esc(h.error):'')+(h.note?'<br>'+esc(h.note):'')+'</div></article>').join('')||'<p>Waiting for source checks.</p>';
+ $('sourceDetails').innerHTML=sources.map(h=>'<article class="article"><strong>'+esc(h.name)+'</strong> ? '+esc(h.status)+(h.status==='error'&&h.lastSuccess?' ? last-known-good data is stale':'')+'<div class="meta">Last successful fetch: '+date(h.lastSuccess)+'<br>Source publication / quote: '+(h.sourceTimeKind==='date'?navLabel(h.sourceAt):date(h.sourceAt))+(h.sourceAt?'':' (not supplied or not verifiable)')+(h.error?'<br>Error: '+esc(h.error):'')+(h.note?'<br>'+esc(h.note):'')+'</div></article>').join('')||'<p>Waiting for source checks.</p>';
 }
 
 const chartSpecs=[['XAU','gold','#e9c17a'],['XAG','silver','#b6d6eb']];
@@ -248,13 +293,14 @@ function render(){
  $('health').textContent=networkError?'CONNECTION LOST':expired?'MONITOR OVERDUE':!state?'CONNECTING':available+'/'+sites.length+' SOURCES AVAILABLE';
  $('health').classList.toggle('ok',available===sites.length&&!networkError&&!expired);
  $('jewellers').innerHTML=visible.map(([id,name,url])=>{const e=entries[id],rates=e?.rates||{},stale=e?.checkedAt&&Date.now()-Date.parse(e.checkedAt)>1800000;const status=!e?'Waiting':e.status==='available'?(stale?'Stale':'Fetched'):e.status==='error'?'STALE ? Source error':'STALE ? Unavailable';return '<section class="card"><div class="cardhead"><a href="'+url+'" target="_blank" rel="noopener noreferrer">'+name+'</a><span class="state">'+status+'</span></div><div class="rates">'+[['gold24k','24K gold'],['gold22k','22K gold'],['silver','Silver']].map(([m,label])=>'<div><div class="rate-label">'+label+'</div><div class="rate">'+money(rates[m])+'</div></div>').join('')+'</div><div class="meta">Checked '+(e?date(e.checkedAt):'—')+'</div><div class="meta source-note">'+(e?.publishedDate?'Rate date '+date(e.publishedDate):'Rate date unverified · GST unknown')+'</div><div class="meta source-note" title="'+esc(e?.note||'')+'">'+esc(e?.note||'Awaiting website check')+'</div></section>';}).join('')||'<div class="empty">Waiting for prices. Jeweller cards appear automatically when at least one gold or silver rate is available.</div>';
+ $('jewellers').innerHTML+=renderFundCards();
  $('connections').innerHTML='<div class="feedrow"><span>Jeweller sources</span><span>'+visible.length+' shown · '+(sites.length-visible.length)+' hidden</span></div><div class="feedrow"><span>Website checks</span><span>Every 15 min</span></div><div class="feedrow"><span>News window</span><span>Today + yesterday</span></div><div class="feedrow"><span>Telegram</span><span>'+(s.config.telegram?'Configured':'Not connected')+'</span></div>';
  $('feedError').textContent=networkError?'Backend unreachable; retaining last snapshot.':expired?'Scheduled monitor is overdue.':available<sites.length?'Some pages require regional URLs or a rendered-page adapter.':'All sources returned rates.';
  $('tgStatus').textContent=!s.config.telegram?'Bot not connected':(s.pendingMessages||0)+' messages queued';
  const delivered=(s.events||[]).find(e=>e.text?.startsWith('Telegram delivered:'));$('delivery').textContent=delivered?'Last delivery '+date(delivered.at):s.config.telegram?'Scheduled summaries enabled':'Add bot credentials on the server';
  $('lastUpdate').textContent=s.lastPoll?'Backend checked '+date(s.lastPoll):'Waiting for first backend snapshot';
  const counts=(s.sources||[]).reduce((a,h)=>(a[h.status]=(a[h.status]||0)+1,a),{});$('connections').innerHTML+='<div class="feedrow"><span>Feeds ? details ?</span><span>'+ (counts.fresh||0)+' fresh ? '+(counts.stale||0)+' stale ? '+(counts.error||0)+' errors</span></div>';
- renderGlobalCharts();renderNews();renderSources();clock();
+ renderGlobalCharts();renderNews();renderSources();if(activeFund)renderFundHistory();clock();
 }
 $('testTelegram').onclick=async()=>{
  const button=$('testTelegram'),message=$('telegramTestResult');button.disabled=true;button.textContent='Sending…';message.textContent='';
@@ -270,6 +316,8 @@ $('testTelegram').onclick=async()=>{
 };
 function clock(){const now=new Date();$('clock').textContent=now.toLocaleTimeString('en-IN',{timeZone:'Asia/Kolkata',hour12:false})+' IST';const parts=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(now),h=Number(parts.find(p=>p.type==='hour').value),m=Number(parts.find(p=>p.type==='minute').value),hours=[8,10,14,16,18],next=hours.find(x=>x*60>h*60+m)??8;$('times').innerHTML=hours.map(x=>'<span class="time '+(x===next?'next':'')+'">'+String(x).padStart(2,'0')+':00</span>').join('');}
 async function load(){if(loading)return;loading=true;try{const r=await fetch('/api/status',{cache:'no-store',signal:AbortSignal.timeout(10000)});if(!r.ok)throw Error();const data=await r.json();if(!data.config)throw Error();state=data;networkError=false;}catch{networkError=true;}finally{loading=false;render();}}
+$('jewellers').addEventListener('click',e=>{const button=e.target?.closest?.('[data-fund]');if(button){activeFund=Number(button.dataset.fund);renderFundHistory();$('fundDialog').showModal();}});
+$('fundRange').onchange=renderFundHistory;$('closeFund').onclick=()=>{$('fundDialog').close();activeFund=null;};$('fundDialog').addEventListener('close',()=>{activeFund=null;});
 $('openSources').onclick=()=>{renderSources();$('sourcesDialog').showModal();};$('closeSources').onclick=()=>$('sourcesDialog').close();
 $('openNews').onclick=()=>{renderNews();$('newsDialog').showModal();};$('closeNews').onclick=()=>$('newsDialog').close();
 $('newsDialog').addEventListener('click',e=>{if(e.target===$('newsDialog')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close();}});

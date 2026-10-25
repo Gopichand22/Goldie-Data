@@ -1,6 +1,6 @@
 FROM node:22-alpine
 WORKDIR /app
-COPY package.json core.mjs server.mjs monitor.mjs feeds.mjs integrations.mjs jewellers.mjs news-policy.mjs mint-prices.mjs telegram-test.mjs ./
+COPY package.json core.mjs server.mjs monitor.mjs feeds.mjs integrations.mjs funds.mjs jewellers.mjs news-policy.mjs mint-prices.mjs telegram-test.mjs ./
 COPY dist ./dist
 RUN mkdir /app/data && chown node:node /app/data
 USER node

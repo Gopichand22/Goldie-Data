@@ -2,10 +2,11 @@ import {iso,moved} from './core.mjs';
 import {createIntegrations} from './integrations.mjs';
 import {fetchJewellers,JEWELLERS} from './jewellers.mjs';
 import {fetchMintPrices} from './mint-prices.mjs';
+import {fetchFunds} from './funds.mjs';
 export function createMonitor(s,env,save,request=fetch){
 const free=env.FREE_FEEDS!=='false';
 const config={metals:env.JEWELLER_FEEDS!=='false',spot:free&&env.INTERNATIONAL_SPOT!=='false',
-  news:free,telegram:!!env.TELEGRAM_BOT_TOKEN&&!!env.TELEGRAM_CHAT_ID};
+  news:free,funds:free&&env.FUND_NAVS!=='false',telegram:!!env.TELEGRAM_BOT_TOKEN&&!!env.TELEGRAM_CHAT_ID};
 delete s.etfs;delete s.errors.ETFs;
 s.spot ||= {};s.spotInr ||= {};s.feedChecked ||= {};s.newsFeeds ||= {};
 
@@ -28,6 +29,7 @@ async function refresh(now){
     }
   }
   if(config.news)await integrations.news(now);
+  if(config.funds)await fetchFunds(s,now,request);
   s.history=s.history.filter(x=>Date.parse(x.at)>now-7*86400000).slice(-20000);
   s.lastPoll=iso(now);
 }
