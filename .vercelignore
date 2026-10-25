@@ -1,0 +1,8 @@
+.env
+.env.*
+!.env.example
+data/
+site-inspection/
+.git/
+.openai/
+*.zip

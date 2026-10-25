@@ -1,0 +1,1 @@
+{"name":"metals-watch","private":true,"type":"module","scripts":{"start":"node --env-file-if-exists=.env server.mjs","test":"node --test test.mjs cloud.test.mjs feeds.test.mjs jewellers.test.mjs dashboard.test.mjs"},"engines":{"node":"22.x"}}
