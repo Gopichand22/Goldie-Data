@@ -1,5 +1,6 @@
 import {createMonitor} from './monitor.mjs';
 import {recentImportantNews} from './news-policy.mjs';
+import {allowTestRequest,sendTelegramTest} from './telegram-test.mjs';
 import http from 'node:http';
 import {readFile,writeFile,mkdir,rename} from 'node:fs/promises';
 import {resolve} from 'node:path';
@@ -28,6 +29,14 @@ async function tick(){
 const html=await readFile(new URL('./dist/index.html',import.meta.url));
 const server=http.createServer(async(req,res)=>{
   const headers={'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','Content-Security-Policy':"default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'"};
+  if(req.url==='/api/telegram-test'){
+    if(!allowTestRequest(req)){res.writeHead(req.method==='POST'?403:405,headers);res.end();return;}
+    if(busy){res.writeHead(409,{...headers,'Content-Type':'application/json'});res.end(JSON.stringify({message:'Monitor is busy. Try again in a few seconds.'}));return;}
+    busy=true;
+    try{const result=await sendTelegramTest(s,env,save);res.writeHead(result.status,{...headers,'Content-Type':'application/json'});res.end(JSON.stringify({message:result.message}));}
+    catch{res.writeHead(503,headers);res.end();}finally{busy=false;}
+    return;
+  }
   if(req.method!=='GET'){res.writeHead(405,headers);res.end();return;}
   if(req.url==='/api/status'){
     res.writeHead(200,{...headers,'Content-Type':'application/json'});
