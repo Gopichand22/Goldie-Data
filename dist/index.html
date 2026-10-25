@@ -150,7 +150,7 @@ dialog::backdrop { background:#000b; }
 </main>
 <footer><span id="lastUpdate">Waiting for backend</span><span>Jewellers: INR/g · International spot: USD/troy oz</span></footer>
 <dialog id="newsDialog" aria-labelledby="newsDialogTitle"><div class="dialoghead"><h2 id="newsDialogTitle">Market & policy intelligence</h2><button class="close" id="closeNews" aria-label="Close news dialog">Close ✕</button></div><div class="dialogbody"><div class="window" id="newsWindow"></div><div id="allNews"></div></div></dialog>
-<dialog id="sourcesDialog" aria-labelledby="sourcesTitle"><div class="dialoghead"><h2 id="sourcesTitle">Source health ? fetch and publication times</h2><button class="close" id="closeSources">Close</button></div><div class="dialogbody" id="sourceDetails"></div></dialog>
+<dialog id="sourcesDialog" aria-labelledby="sourcesTitle"><div class="dialoghead"><h2 id="sourcesTitle">Source health | fetch and publication times</h2><button class="close" id="closeSources">Close</button></div><div class="dialogbody" id="sourceDetails"></div></dialog>
 <dialog id="fundDialog" aria-labelledby="fundTitle"><div class="dialoghead"><h2 id="fundTitle">Published NAV history</h2><button class="close" id="closeFund" aria-label="Close NAV history">Close</button></div><div class="dialogbody"><div class="fund-controls"><span id="fundSummary"></span><label>Trend <select id="fundRange" aria-label="NAV history range"><option value="30">1 month</option><option value="90" selected>3 months</option><option value="365">1 year</option><option value="all">All history</option></select></label></div><div class="plot fund-history-plot" id="fundPlot" tabindex="0" aria-label="Published NAV trend; hover or use arrow keys for observations"></div><p class="meta" id="fundDetails"></p></div></dialog>
 <script>
 const $=id=>document.getElementById(id);
@@ -202,7 +202,7 @@ function renderFundHistory(){
 }
 function recentNews(){const now=Date.now(),days=[day(now),day(now-86400000)];return (state?.news||[]).filter(n=>{try{return Date.parse(n.at)<=now&&days.includes(day(Date.parse(n.at)))&&['https:','http:'].includes(new URL(n.url).protocol);}catch{return false;}});}
 function quoteStale(symbol,q,inr=false){const id=(inr?'SpotINR/':'Spot/')+symbol;return !!q&&(q.stale||Date.now()-Date.parse(q.at)>180000||!q.at||(!String(q.source).startsWith('XAUS')&&(state?.sources||[]).some(h=>h.id===id&&h.status==='error')));}
-function article(n){return '<article class="article"><div class="meta">'+esc(n.publisher||n.source)+' ? '+date(n.publishedAt||n.at)+'</div><a href="'+esc(n.url)+'" target="_blank" rel="noopener noreferrer">'+esc(n.title)+'</a><div class="meta">Via '+esc(n.source)+' ? fetched '+date(n.fetchedAt)+((!n.fetchedAt||Date.now()-Date.parse(n.fetchedAt)>1800000||(state?.sources||[]).some(h=>h.name===n.source&&h.status==='error'))?' ? STALE':'')+'</div></article>';}
+function article(n){return '<article class="article"><div class="meta">'+esc(n.publisher||n.source)+' | '+date(n.publishedAt||n.at)+'</div><a href="'+esc(n.url)+'" target="_blank" rel="noopener noreferrer">'+esc(n.title)+'</a><div class="meta">Via '+esc(n.source)+' | fetched '+date(n.fetchedAt)+((!n.fetchedAt||Date.now()-Date.parse(n.fetchedAt)>1800000||(state?.sources||[]).some(h=>h.name===n.source&&h.status==='error'))?' | STALE':'')+'</div></article>';}
 function renderNews(){
  const items=recentNews(),root=$('news');newsIndex%=Math.max(1,items.length);
  root.innerHTML='';let shown=0;
@@ -211,14 +211,14 @@ function renderNews(){
   if(root.clientHeight&&root.scrollHeight>root.clientHeight){root.innerHTML=before;break;}shown++;
  }
  if(!items.length)root.innerHTML='<div class="empty">No qualifying important headlines today or yesterday.</div>';
- if(items.length&&!shown)root.innerHTML='<div class="empty">Open intelligence ? for full headlines.</div>';
- $('newsCount').textContent=shown+' shown / '+items.length+' eligible ? refreshed about every 15 min';
+ if(items.length&&!shown)root.innerHTML='<div class="empty">Open the intelligence panel for full headlines.</div>';
+ $('newsCount').textContent=shown+' shown / '+items.length+' eligible | refreshed about every 15 min';
  $('newsWindow').textContent='Today + yesterday (IST). Publisher timestamps only. Periodically fetched news; no latency guarantee.';
  $('allNews').innerHTML=items.map(article).join('')||'<p class="empty">No important headlines in this date window.</p>';
 }
 function renderSources(){
  const sources=state?.sources||[];
- $('sourceDetails').innerHTML=sources.map(h=>'<article class="article"><strong>'+esc(h.name)+'</strong> ? '+esc(h.status)+(h.status==='error'&&h.lastSuccess?' ? last-known-good data is stale':'')+'<div class="meta">Last successful fetch: '+date(h.lastSuccess)+'<br>Source publication / quote: '+(h.sourceTimeKind==='date'?navLabel(h.sourceAt):date(h.sourceAt))+(h.sourceAt?'':' (not supplied or not verifiable)')+(h.error?'<br>Error: '+esc(h.error):'')+(h.note?'<br>'+esc(h.note):'')+'</div></article>').join('')||'<p>Waiting for source checks.</p>';
+ $('sourceDetails').innerHTML=sources.map(h=>'<article class="article"><strong>'+esc(h.name)+'</strong> | '+esc(h.status)+(h.status==='error'&&h.lastSuccess?' | last-known-good data is stale':'')+'<div class="meta">Last successful fetch: '+date(h.lastSuccess)+'<br>Source publication / quote: '+(h.sourceTimeKind==='date'?navLabel(h.sourceAt):date(h.sourceAt))+(h.sourceAt?'':' (not supplied or not verifiable)')+(h.error?'<br>Error: '+esc(h.error):'')+(h.note?'<br>'+esc(h.note):'')+'</div></article>').join('')||'<p>Waiting for source checks.</p>';
 }
 
 const chartSpecs=[['XAU','gold','#e9c17a'],['XAG','silver','#b6d6eb']];
@@ -256,7 +256,7 @@ function drawGlobalChart(symbol,prefix,color){
  };
  root.onpointerleave=hide;root.onblur=hide;root.onkeydown=event=>{if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();show(selected+(event.key==='ArrowLeft'?-1:1));}};
 }
-function renderGlobalCharts(){for(const spec of chartSpecs){drawGlobalChart(...spec);const [symbol,prefix]=spec,q=state?.spot?.[symbol];$(prefix+'ChartStatus').textContent=(quoteStale(symbol,q)?'STALE ? ':'Captured quotes ? ')+(q?.source||'Source pending')+' ? '+date(q?.at);}}
+function renderGlobalCharts(){for(const spec of chartSpecs){drawGlobalChart(...spec);const [symbol,prefix]=spec,q=state?.spot?.[symbol];$(prefix+'ChartStatus').textContent=(quoteStale(symbol,q)?'STALE | ':'Captured quotes | ')+(q?.source||'Source pending')+' | '+date(q?.at);}}
 async function refreshChart(symbol,prefix,color){
  const button=$(prefix+'ChartRefresh');button.disabled=true;button.textContent='Refreshing…';
  try{
@@ -295,7 +295,7 @@ function render(){
 
  for(const [symbol,id] of [['XAU','globalGold'],['XAG','globalSilver']]){
   const q=s.spotInr?.[symbol];
-  $(id+'Inr').textContent=q&&Number.isFinite(q.ouncePrice)?(quoteStale(symbol,q,true)?'STALE ? ':'')+money(q.ouncePrice)+' / oz · '+money(q.price)+'/g':'INR conversion pending';
+  $(id+'Inr').textContent=q&&Number.isFinite(q.ouncePrice)?(quoteStale(symbol,q,true)?'STALE | ':'')+money(q.ouncePrice)+' / oz · '+money(q.price)+'/g':'INR conversion pending';
   $(id+'Inr').title=q?'INR source '+date(q.at):'Waiting for INR feed';
   $(id+'Inr').classList.toggle('warn',quoteStale(symbol,q,true));
  }
@@ -306,14 +306,14 @@ function render(){
  $('khazanaGoldTime').textContent=leadTime;$('khazanaSilverTime').textContent=leadTime;
  $('health').textContent=networkError?'OFFLINE - SAVED DATA':cachedSnapshot?'CACHED - VERIFYING':expired?'MONITOR OVERDUE':available+'/'+sites.length+' SOURCES AVAILABLE';
  $('health').classList.toggle('ok',available===sites.length&&!networkError&&!expired&&!cachedSnapshot);
- $('jewellers').innerHTML=visible.map(([id,name,url])=>{const e=entries[id],rates=e?.rates||{},stale=e?.checkedAt&&Date.now()-Date.parse(e.checkedAt)>1800000;const status=!e?'Waiting':e.status==='available'?(stale?'Stale':'Fetched'):e.status==='error'?'STALE ? Source error':'STALE ? Unavailable';return '<section class="card"><div class="cardhead"><a href="'+url+'" target="_blank" rel="noopener noreferrer">'+name+'</a><span class="state">'+status+'</span></div><div class="rates">'+[['gold24k','24K gold'],['gold22k','22K gold'],['silver','Silver']].map(([m,label])=>'<div><div class="rate-label">'+label+'</div><div class="rate">'+money(rates[m])+'</div></div>').join('')+'</div><div class="meta">Checked '+(e?date(e.checkedAt):'—')+'</div><div class="meta source-note">'+(e?.publishedDate?'Rate date '+date(e.publishedDate):'Rate date unverified · GST unknown')+'</div><div class="meta source-note" title="'+esc(e?.note||'')+'">'+esc(e?.note||'Awaiting website check')+'</div></section>';}).join('')||'<div class="empty">Waiting for prices. Jeweller cards appear automatically when at least one gold or silver rate is available.</div>';
+ $('jewellers').innerHTML=visible.map(([id,name,url])=>{const e=entries[id],rates=e?.rates||{},stale=e?.checkedAt&&Date.now()-Date.parse(e.checkedAt)>1800000;const status=!e?'Waiting':e.status==='available'?(stale?'Stale':'Fetched'):e.status==='error'?'STALE | Source error':'STALE | Unavailable';return '<section class="card"><div class="cardhead"><a href="'+url+'" target="_blank" rel="noopener noreferrer">'+name+'</a><span class="state">'+status+'</span></div><div class="rates">'+[['gold24k','24K gold'],['gold22k','22K gold'],['silver','Silver']].map(([m,label])=>'<div><div class="rate-label">'+label+'</div><div class="rate">'+money(rates[m])+'</div></div>').join('')+'</div><div class="meta">Checked '+(e?date(e.checkedAt):'—')+'</div><div class="meta source-note">'+(e?.publishedDate?'Rate date '+date(e.publishedDate):'Rate date unverified · GST unknown')+'</div><div class="meta source-note" title="'+esc(e?.note||'')+'">'+esc(e?.note||'Awaiting website check')+'</div></section>';}).join('')||'<div class="empty">Waiting for prices. Jeweller cards appear automatically when at least one gold or silver rate is available.</div>';
  $('jewellers').innerHTML+=renderFundCards();
  $('connections').innerHTML='<div class="feedrow"><span>Jeweller sources</span><span>'+visible.length+' shown · '+(sites.length-visible.length)+' hidden</span></div><div class="feedrow"><span>Website checks</span><span>Every 15 min</span></div><div class="feedrow"><span>News window</span><span>Today + yesterday</span></div><div class="feedrow"><span>Telegram</span><span>'+(s.config.telegram?'Configured':'Not connected')+'</span></div>';
  $('feedError').textContent=networkError?'Backend unreachable; showing last saved snapshot. Source timestamps have not changed.':cachedSnapshot?'Showing saved data while checking the backend. Source timestamps have not changed.':expired?'Scheduled monitor is overdue.':available<sites.length?'Some pages require regional URLs or a rendered-page adapter.':'All sources returned rates.';
  $('tgStatus').textContent=!s.config.telegram?'Bot not connected':(s.pendingMessages||0)+' messages queued';
  const delivered=(s.events||[]).find(e=>e.text?.startsWith('Telegram delivered:'));$('delivery').textContent=delivered?'Last delivery '+date(delivered.at):s.config.telegram?'Scheduled summaries enabled':'Add bot credentials on the server';
  $('lastUpdate').textContent=s.lastPoll?'Backend checked '+date(s.lastPoll):'Waiting for first backend snapshot';
- const counts=(s.sources||[]).reduce((a,h)=>(a[h.status]=(a[h.status]||0)+1,a),{});$('connections').innerHTML+='<div class="feedrow"><span>Feeds ? details ?</span><span>'+ (counts.fresh||0)+' fresh ? '+(counts.stale||0)+' stale ? '+(counts.error||0)+' errors</span></div>';
+ const counts=(s.sources||[]).reduce((a,h)=>(a[h.status]=(a[h.status]||0)+1,a),{});$('connections').innerHTML+='<div class="feedrow"><span>Feed status</span><span>'+ (counts.fresh||0)+' fresh | '+(counts.stale||0)+' stale | '+(counts.error||0)+' errors</span></div>';
  renderGlobalCharts();renderNews();renderSources();if(activeFund)renderFundHistory();clock();
 }
 $('testTelegram').onclick=async()=>{
