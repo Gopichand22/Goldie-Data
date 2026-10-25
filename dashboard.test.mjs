@@ -10,6 +10,13 @@ test('dashboard renders fetched INR prices, source cards and populated global ch
  const context=vm.createContext({document:{getElementById:id=>{assert.ok(nodes.has(id),'Missing DOM element '+id);return nodes.get(id);},addEventListener(){}},Intl,Date,URL,AbortSignal,setInterval(){},fetch:async()=>({ok:true,json:async()=>data})});
  vm.runInContext(html.match(/<script>([\s\S]*?)<\/script>/)[1],context);
  await vm.runInContext('load()',context);await new Promise(r=>setImmediate(r));
+ data.news=[{id:'one',title:'Gold prices rise in India',publisher:'Publisher One',url:'https://example.com/one',at,publishedAt:at,fetchedAt:at,category:'Indian gold',source:'Feed One'},{id:'two',title:'Silver prices drop',publisher:'Publisher Two',url:'https://example.com/two',at,publishedAt:at,fetchedAt:at,category:'Silver',source:'Feed Two'}];
+ data.sources=[{id:'News/Feed One',name:'Feed One',status:'error',error:'Provider HTTP 503',lastSuccess:at,sourceAt:at}];
+ await vm.runInContext('load()',context);
+ assert.match(nodes.get('news').innerHTML,/Gold prices rise/);assert.match(nodes.get('news').innerHTML,/Silver prices drop/);
+ assert.match(nodes.get('newsCount').textContent,/2 shown \/ 2 eligible/);
+ assert.match(nodes.get('news').innerHTML,/STALE/);
+ nodes.get('openSources').onclick();assert.match(nodes.get('sourceDetails').innerHTML,/Provider HTTP 503/);
  assert.match(nodes.get('globalGoldInr').textContent,/3,80,000/);
  assert.match(nodes.get('globalSilverInr').textContent,/4,750/);
  assert.match(nodes.get('jewellers').innerHTML,/Khazana/);

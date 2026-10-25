@@ -101,11 +101,11 @@ export async function fetchJewellers(state,now,request=fetch,interval=900000){
      if(price>0&&price<100000&&Number.isFinite(Date.parse(j.updated_at)))parsed={...parsed,rates:{gold22k:price},publishedDate:j.updated_at,status:'available',location:j.branch_name||'Branch '+j.branch_code,note:'22K · '+(j.branch_name||'Branch '+j.branch_code)+' only · GST unspecified · public calculator feed'};
     }
    }
-   state.jewellers[site.id]={...site,...parsed};
+   state.jewellers[site.id]=parsed.status==='available'?{...site,...parsed,lastGoodAt:iso(now)}:{...site,...parsed,rates:old?.rates||parsed.rates,publishedDate:old?.publishedDate||parsed.publishedDate,lastGoodAt:old?.lastGoodAt||(old?.status==='available'?old.checkedAt:null)};
    if(parsed.status==='available')for(const [metal,price] of Object.entries(parsed.rates)){
     const id='jeweller/'+site.id+'/'+metal,last=state.history.filter(p=>p.id===id).at(-1);
     if(!last||last.price!==price||now-Date.parse(last.at)>=3600000)state.history.push({id,price,at:iso(now)});
    }
-  }catch(e){state.jewellers[site.id]={...site,rates:old?.rates||{},publishedDate:old?.publishedDate||null,lastGoodAt:old?.lastGoodAt||old?.checkedAt||null,checkedAt:iso(now),status:'error',unit:'INR/g',note:e.message.startsWith('Source HTTP')?e.message:'Source unreachable or extraction failed'};}
+  }catch(e){state.jewellers[site.id]={...site,rates:old?.rates||{},publishedDate:old?.publishedDate||null,lastGoodAt:old?.lastGoodAt||(old?.status==='available'?old.checkedAt:null),checkedAt:iso(now),status:'error',unit:'INR/g',note:e.message.startsWith('Source HTTP')?e.message:'Source unreachable or extraction failed'};}
  }));
 }

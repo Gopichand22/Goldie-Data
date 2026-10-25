@@ -85,6 +85,7 @@ h2 { font-size:14px;font-weight:600;margin:0; }
 .chart-range { display:flex;justify-content:space-between;gap:5px;margin-top:6px;font-size:10px;line-height:1.35;color:var(--muted);flex-shrink:0; }
 .chart-tooltip { position:absolute;top:6px;z-index:2;pointer-events:none;background:#0B1017;border:1px solid #50627b;padding:7px 10px;border-radius:4px;white-space:nowrap;box-shadow:0 3px 10px #0005; }
 .chart-tooltip[hidden] { display:none; }.chart-tooltip strong { display:block;font-size:14px; }.chart-tooltip small { color:var(--muted);font-size:10px;font-weight:400; }.chart-tooltip span { display:block;color:var(--muted);font-size:10px;margin-top:2px; }
+.newsitems { overflow:hidden; }.newsitems .article { flex-shrink:0; }
 .news-title { appearance:none;border:0;background:none;color:var(--ink);font-size:14px;font-weight:600;padding:0;text-align:left; }
 .news-title:hover { color:var(--gold); }.newsitems { flex:1;min-height:0;display:flex;flex-direction:column;justify-content:flex-start;gap:10px;padding-top:5px; }
 .article .meta { margin-bottom:7px;line-height:1.5;overflow-wrap:anywhere; }
@@ -135,13 +136,14 @@ dialog::backdrop { background:#000b; }
 <section class="monitor-zone" aria-label="Retailers and monitoring">
 <section class="retailer-zone" aria-label="Indian jeweller rates"><div class="wallhead"><h1>Indian gold & silver rates</h1><span class="meta">₹ / gram · official website sources</span></div><div class="jewellers" id="jewellers"></div></section>
 <aside class="operations-zone" aria-label="Delivery and source monitoring"><section class="panel telegram"><div class="panelhead"><h2>Telegram delivery</h2><span class="tag">DAILY · IST</span></div><div class="times" id="times"></div><div id="tgStatus">Not connected</div><div class="meta" id="delivery"></div><div class="telegram-test-controls"><button class="chart-refresh" id="testTelegram">Test Telegram</button><span class="meta" id="telegramTestResult" role="status"></span></div></section>
-<section class="panel system"><div class="panelhead"><h2>Source health</h2><span class="tag">AUTO SYNC</span></div><div class="systembody" id="connections"></div><div class="meta warn" id="feedError" role="status"></div></section>
+<section class="panel system"><div class="panelhead"><button class="news-title" id="openSources" aria-haspopup="dialog">Source health ?</button><span class="tag">AUTO SYNC</span></div><div class="systembody" id="connections"></div><div class="meta warn" id="feedError" role="status"></div></section>
 </aside>
 </section>
 <section class="analysis-zone" aria-label="Global price charts and market intelligence"><div class="livechart"><div class="charthead"><div><span>GLOBAL GOLD</span><div class="chart-value" id="goldChartValue">—</div></div><div class="chart-tools"><span class="meta" id="goldChange">USD / troy oz</span><button class="chart-refresh" id="goldChartRefresh" aria-label="Refresh gold chart" title="Reload latest saved price history">↻ Refresh</button></div></div><div class="chart-status" id="goldChartStatus" aria-live="polite">Live captures · USD / troy ounce</div><div class="plot" id="goldPlot"></div></div><div class="livechart"><div class="charthead"><div><span>GLOBAL SILVER</span><div class="chart-value" id="silverChartValue">—</div></div><div class="chart-tools"><span class="meta" id="silverChange">USD / troy oz</span><button class="chart-refresh" id="silverChartRefresh" aria-label="Refresh silver chart" title="Reload latest saved price history">↻ Refresh</button></div></div><div class="chart-status" id="silverChartStatus" aria-live="polite">Live captures · USD / troy ounce</div><div class="plot" id="silverPlot"></div></div><section class="panel news"><div class="panelhead"><button class="news-title" id="openNews" aria-haspopup="dialog">Market & policy intelligence ↗</button></div><div class="newsitems" id="news"></div><div class="newsfoot" id="newsCount">Today & yesterday · IST · material events only</div></section></section>
 </main>
 <footer><span id="lastUpdate">Waiting for backend</span><span>Jewellers: INR/g · International spot: USD/troy oz</span></footer>
 <dialog id="newsDialog" aria-labelledby="newsDialogTitle"><div class="dialoghead"><h2 id="newsDialogTitle">Market & policy intelligence</h2><button class="close" id="closeNews" aria-label="Close news dialog">Close ✕</button></div><div class="dialogbody"><div class="window" id="newsWindow"></div><div id="allNews"></div></div></dialog>
+<dialog id="sourcesDialog" aria-labelledby="sourcesTitle"><div class="dialoghead"><h2 id="sourcesTitle">Source health ? fetch and publication times</h2><button class="close" id="closeSources">Close ?</button></div><div class="dialogbody" id="sourceDetails"></div></dialog>
 <script>
 const $=id=>document.getElementById(id);
 let state=null,networkError=false,loading=false,newsIndex=0;
@@ -151,8 +153,25 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const date=v=>v&&Number.isFinite(Date.parse(v))?new Date(v).toLocaleString('en-IN',{timeZone:'Asia/Kolkata',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})+' IST':'Unknown';
 const day=t=>new Date(t+330*60000).toISOString().slice(0,10);
 function recentNews(){const now=Date.now(),days=[day(now),day(now-86400000)];return (state?.news||[]).filter(n=>{try{return Date.parse(n.at)<=now&&days.includes(day(Date.parse(n.at)))&&['https:','http:'].includes(new URL(n.url).protocol);}catch{return false;}});}
-function article(n){return '<article class="article"><div class="meta">'+esc(n.source)+' · '+date(n.at)+(n.delay?' · '+esc(n.delay):'')+'</div><a href="'+esc(n.url)+'" target="_blank" rel="noopener noreferrer">'+esc(n.title)+'</a></article>';}
-function renderNews(){const items=recentNews();newsIndex%=Math.max(1,items.length);$('news').innerHTML=items.length?article(items[newsIndex]):'<div class="empty">No qualifying important headlines today or yesterday.</div>';$('newsCount').textContent=items.length+' relevant headlines · today & yesterday (IST)';$('newsWindow').textContent='Date window: '+day(Date.now()-86400000)+' through '+day(Date.now())+' · India Standard Time. Only material metals and policy events.';$('allNews').innerHTML=items.map(article).join('')||'<p class="empty">No important headlines in this date window. Older news is not displayed.</p>';}
+function quoteStale(symbol,q,inr=false){const id=(inr?'SpotINR/':'Spot/')+symbol;return !!q&&(q.stale||Date.now()-Date.parse(q.at)>180000||!q.at||(!String(q.source).startsWith('XAUS')&&(state?.sources||[]).some(h=>h.id===id&&h.status==='error')));}
+function article(n){return '<article class="article"><div class="meta">'+esc(n.publisher||n.source)+' ? '+date(n.publishedAt||n.at)+'</div><a href="'+esc(n.url)+'" target="_blank" rel="noopener noreferrer">'+esc(n.title)+'</a><div class="meta">Via '+esc(n.source)+' ? fetched '+date(n.fetchedAt)+((!n.fetchedAt||Date.now()-Date.parse(n.fetchedAt)>1800000||(state?.sources||[]).some(h=>h.name===n.source&&h.status==='error'))?' ? STALE':'')+'</div></article>';}
+function renderNews(){
+ const items=recentNews(),root=$('news');newsIndex%=Math.max(1,items.length);
+ root.innerHTML='';let shown=0;
+ for(let i=0;i<items.length;i++){
+  const before=root.innerHTML;root.innerHTML+=article(items[(newsIndex+i)%items.length]);
+  if(root.clientHeight&&root.scrollHeight>root.clientHeight){root.innerHTML=before;break;}shown++;
+ }
+ if(!items.length)root.innerHTML='<div class="empty">No qualifying important headlines today or yesterday.</div>';
+ if(items.length&&!shown)root.innerHTML='<div class="empty">Open intelligence ? for full headlines.</div>';
+ $('newsCount').textContent=shown+' shown / '+items.length+' eligible ? refreshed about every 15 min';
+ $('newsWindow').textContent='Today + yesterday (IST). Publisher timestamps only. Periodically fetched news; no latency guarantee.';
+ $('allNews').innerHTML=items.map(article).join('')||'<p class="empty">No important headlines in this date window.</p>';
+}
+function renderSources(){
+ const sources=state?.sources||[];
+ $('sourceDetails').innerHTML=sources.map(h=>'<article class="article"><strong>'+esc(h.name)+'</strong> ? '+esc(h.status)+(h.status==='error'&&h.lastSuccess?' ? last-known-good data is stale':'')+'<div class="meta">Last successful fetch: '+date(h.lastSuccess)+'<br>Source publication / quote: '+date(h.sourceAt)+(h.sourceAt?'':' (not supplied or not verifiable)')+(h.error?'<br>Error: '+esc(h.error):'')+(h.note?'<br>'+esc(h.note):'')+'</div></article>').join('')||'<p>Waiting for source checks.</p>';
+}
 
 const chartSpecs=[['XAU','gold','#e9c17a'],['XAG','silver','#b6d6eb']];
 const usd=v=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:2}).format(v);
@@ -189,7 +208,7 @@ function drawGlobalChart(symbol,prefix,color){
  };
  root.onpointerleave=hide;root.onblur=hide;root.onkeydown=event=>{if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();show(selected+(event.key==='ArrowLeft'?-1:1));}};
 }
-function renderGlobalCharts(){for(const spec of chartSpecs)drawGlobalChart(...spec);}
+function renderGlobalCharts(){for(const spec of chartSpecs){drawGlobalChart(...spec);const [symbol,prefix]=spec,q=state?.spot?.[symbol];$(prefix+'ChartStatus').textContent=(quoteStale(symbol,q)?'STALE ? ':'Captured quotes ? ')+(q?.source||'Source pending')+' ? '+date(q?.at);}}
 async function refreshChart(symbol,prefix,color){
  const button=$(prefix+'ChartRefresh');button.disabled=true;button.textContent='Refreshing…';
  try{
@@ -217,24 +236,25 @@ function render(){
 
  for(const [symbol,id] of [['XAU','globalGold'],['XAG','globalSilver']]){
   const q=s.spotInr?.[symbol];
-  $(id+'Inr').textContent=q&&Number.isFinite(q.ouncePrice)?money(q.ouncePrice)+' / oz · '+money(q.price)+'/g':'INR conversion pending';
+  $(id+'Inr').textContent=q&&Number.isFinite(q.ouncePrice)?(quoteStale(symbol,q,true)?'STALE ? ':'')+money(q.ouncePrice)+' / oz · '+money(q.price)+'/g':'INR conversion pending';
   $(id+'Inr').title=q?'INR source '+date(q.at):'Waiting for INR feed';
-  $(id+'Inr').classList.toggle('warn',!!q&&Date.now()-Date.parse(q.at)>1800000);
+  $(id+'Inr').classList.toggle('warn',quoteStale(symbol,q,true));
  }
- for(const [symbol,id] of [['XAU','globalGold'],['XAG','globalSilver']]){const q=s.spot?.[symbol];const valid=q?.currency==='USD'&&q.unit==='USD/troy oz';$(id).textContent=valid?new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:2}).format(q.price):'—';$(id+'Time').textContent=valid?(Date.now()-Date.parse(q.at)>1800000?'STALE · ':'')+date(q.at):'Waiting for source';}
+ for(const [symbol,id] of [['XAU','globalGold'],['XAG','globalSilver']]){const q=s.spot?.[symbol];const valid=q?.currency==='USD'&&q.unit==='USD/troy oz';$(id).textContent=valid?new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:2}).format(q.price):'—';$(id+'Time').textContent=valid?(quoteStale(symbol,q)?'STALE · ':'')+date(q.at):'Waiting for source';}
  $('khazanaGold').textContent=money(khazana?.rates?.gold22k);
  $('khazanaSilver').textContent=money(khazana?.rates?.silver);
  const leadTime=khazana?'Fetched '+date(khazana.checkedAt)+(khazana.status!=='available'?' · SOURCE ERROR':''):'Waiting for source';
  $('khazanaGoldTime').textContent=leadTime;$('khazanaSilverTime').textContent=leadTime;
  $('health').textContent=networkError?'CONNECTION LOST':expired?'MONITOR OVERDUE':!state?'CONNECTING':available+'/'+sites.length+' SOURCES AVAILABLE';
  $('health').classList.toggle('ok',available===sites.length&&!networkError&&!expired);
- $('jewellers').innerHTML=visible.map(([id,name,url])=>{const e=entries[id],rates=e?.rates||{},stale=e?.checkedAt&&Date.now()-Date.parse(e.checkedAt)>1800000;const status=!e?'Waiting':e.status==='available'?(stale?'Stale':'Fetched'):e.status==='error'?'Source error':'Unavailable';return '<section class="card"><div class="cardhead"><a href="'+url+'" target="_blank" rel="noopener noreferrer">'+name+'</a><span class="state">'+status+'</span></div><div class="rates">'+[['gold24k','24K gold'],['gold22k','22K gold'],['silver','Silver']].map(([m,label])=>'<div><div class="rate-label">'+label+'</div><div class="rate">'+money(rates[m])+'</div></div>').join('')+'</div><div class="meta">Checked '+(e?date(e.checkedAt):'—')+'</div><div class="meta source-note">'+(e?.publishedDate?'Rate date '+date(e.publishedDate):'Rate date unverified · GST unknown')+'</div><div class="meta source-note" title="'+esc(e?.note||'')+'">'+esc(e?.note||'Awaiting website check')+'</div></section>';}).join('')||'<div class="empty">Waiting for prices. Jeweller cards appear automatically when at least one gold or silver rate is available.</div>';
+ $('jewellers').innerHTML=visible.map(([id,name,url])=>{const e=entries[id],rates=e?.rates||{},stale=e?.checkedAt&&Date.now()-Date.parse(e.checkedAt)>1800000;const status=!e?'Waiting':e.status==='available'?(stale?'Stale':'Fetched'):e.status==='error'?'STALE ? Source error':'STALE ? Unavailable';return '<section class="card"><div class="cardhead"><a href="'+url+'" target="_blank" rel="noopener noreferrer">'+name+'</a><span class="state">'+status+'</span></div><div class="rates">'+[['gold24k','24K gold'],['gold22k','22K gold'],['silver','Silver']].map(([m,label])=>'<div><div class="rate-label">'+label+'</div><div class="rate">'+money(rates[m])+'</div></div>').join('')+'</div><div class="meta">Checked '+(e?date(e.checkedAt):'—')+'</div><div class="meta source-note">'+(e?.publishedDate?'Rate date '+date(e.publishedDate):'Rate date unverified · GST unknown')+'</div><div class="meta source-note" title="'+esc(e?.note||'')+'">'+esc(e?.note||'Awaiting website check')+'</div></section>';}).join('')||'<div class="empty">Waiting for prices. Jeweller cards appear automatically when at least one gold or silver rate is available.</div>';
  $('connections').innerHTML='<div class="feedrow"><span>Jeweller sources</span><span>'+visible.length+' shown · '+(sites.length-visible.length)+' hidden</span></div><div class="feedrow"><span>Website checks</span><span>Every 15 min</span></div><div class="feedrow"><span>News window</span><span>Today + yesterday</span></div><div class="feedrow"><span>Telegram</span><span>'+(s.config.telegram?'Configured':'Not connected')+'</span></div>';
  $('feedError').textContent=networkError?'Backend unreachable; retaining last snapshot.':expired?'Scheduled monitor is overdue.':available<sites.length?'Some pages require regional URLs or a rendered-page adapter.':'All sources returned rates.';
  $('tgStatus').textContent=!s.config.telegram?'Bot not connected':(s.pendingMessages||0)+' messages queued';
  const delivered=(s.events||[]).find(e=>e.text?.startsWith('Telegram delivered:'));$('delivery').textContent=delivered?'Last delivery '+date(delivered.at):s.config.telegram?'Scheduled summaries enabled':'Add bot credentials on the server';
  $('lastUpdate').textContent=s.lastPoll?'Backend checked '+date(s.lastPoll):'Waiting for first backend snapshot';
- renderGlobalCharts();renderNews();clock();
+ const counts=(s.sources||[]).reduce((a,h)=>(a[h.status]=(a[h.status]||0)+1,a),{});$('connections').innerHTML+='<div class="feedrow"><span>Feeds ? details ?</span><span>'+ (counts.fresh||0)+' fresh ? '+(counts.stale||0)+' stale ? '+(counts.error||0)+' errors</span></div>';
+ renderGlobalCharts();renderNews();renderSources();clock();
 }
 $('testTelegram').onclick=async()=>{
  const button=$('testTelegram'),message=$('telegramTestResult');button.disabled=true;button.textContent='Sending…';message.textContent='';
@@ -250,7 +270,8 @@ $('testTelegram').onclick=async()=>{
 };
 function clock(){const now=new Date();$('clock').textContent=now.toLocaleTimeString('en-IN',{timeZone:'Asia/Kolkata',hour12:false})+' IST';const parts=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(now),h=Number(parts.find(p=>p.type==='hour').value),m=Number(parts.find(p=>p.type==='minute').value),hours=[8,10,14,16,18],next=hours.find(x=>x*60>h*60+m)??8;$('times').innerHTML=hours.map(x=>'<span class="time '+(x===next?'next':'')+'">'+String(x).padStart(2,'0')+':00</span>').join('');}
 async function load(){if(loading)return;loading=true;try{const r=await fetch('/api/status',{cache:'no-store',signal:AbortSignal.timeout(10000)});if(!r.ok)throw Error();const data=await r.json();if(!data.config)throw Error();state=data;networkError=false;}catch{networkError=true;}finally{loading=false;render();}}
+$('openSources').onclick=()=>{renderSources();$('sourcesDialog').showModal();};$('closeSources').onclick=()=>$('sourcesDialog').close();
 $('openNews').onclick=()=>{renderNews();$('newsDialog').showModal();};$('closeNews').onclick=()=>$('newsDialog').close();
 $('newsDialog').addEventListener('click',e=>{if(e.target===$('newsDialog')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close();}});
-render();load();setInterval(load,30000);setInterval(clock,1000);setInterval(()=>{newsIndex++;renderNews();},18000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)load();});
+render();load();setInterval(load,30000);setInterval(clock,1000);setInterval(()=>{newsIndex++;renderNews();},18000);if(typeof window!=='undefined')window.addEventListener('resize',renderNews);document.addEventListener('visibilitychange',()=>{if(!document.hidden)load();});
 </script></body></html>

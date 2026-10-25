@@ -1,3 +1,4 @@
+import {sourceStatus} from './integrations.mjs';
 import {createMonitor} from './monitor.mjs';
 import {recentImportantNews} from './news-policy.mjs';
 import {allowTestRequest,sendTelegramTest} from './telegram-test.mjs';
@@ -6,7 +7,7 @@ import {readFile,writeFile,mkdir,rename} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {CITIES,ist,iso,dueSlots,cityQuote,moved,stale,summary,finitePrice} from './core.mjs';
 const env=process.env, dir=resolve(env.DATA_DIR||'data'), started=Date.now();
-const poll=Math.max(60,Number(env.POLL_SECONDS)||60)*1000;
+const poll=Math.max(30,Number(env.POLL_SECONDS)||30)*1000;
 await mkdir(dir,{recursive:true});
 const file=resolve(dir,'state.json');
 let s={quotes:{},news:[],history:[],sent:{},outbox:[],events:[],anchors:{},lastPoll:null,errors:{}};
@@ -40,7 +41,7 @@ const server=http.createServer(async(req,res)=>{
   if(req.method!=='GET'){res.writeHead(405,headers);res.end();return;}
   if(req.url==='/api/status'){
     res.writeHead(200,{...headers,'Content-Type':'application/json'});
-    res.end(JSON.stringify({...s,newsFeeds:undefined,news:recentImportantNews(s.news||[]),anchors:undefined,sent:undefined,outbox:undefined,config,pollSeconds:poll/1000,alertPercent:Number(env.ALERT_PERCENT)||0,pendingMessages:s.outbox.length,serverTime:iso(Date.now()),startedAt:iso(started)}));return;
+    res.end(JSON.stringify({...s,sources:sourceStatus(s),newsFeeds:undefined,news:recentImportantNews(s.news||[]),anchors:undefined,sent:undefined,outbox:undefined,config,pollSeconds:poll/1000,alertPercent:Number(env.ALERT_PERCENT)||0,pendingMessages:s.outbox.length,serverTime:iso(Date.now()),startedAt:iso(started)}));return;
   }
   if(req.url!=='/'&&req.url!=='/index.html'){res.writeHead(404,headers);res.end('Not found');return;}
   res.writeHead(200,{...headers,'Content-Type':'text/html; charset=utf-8'});res.end(html);

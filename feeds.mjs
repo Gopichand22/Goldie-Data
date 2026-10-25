@@ -21,8 +21,8 @@ function decode(text){
 // Bounded extraction for the fixed public RSS 2.0 feed, not a general XML evaluator.
 // No external entities, DTDs, scripts, or remote references are executed.
 export function fedNews(xml,{hostname='www.federalreserve.gov',source='Federal Reserve · Monetary policy',category='Monetary policy'}={}){
-  if(xml.length>1000000||!/<rss\b/i.test(xml)||/<!DOCTYPE|<!ENTITY/i.test(xml))throw Error('Invalid RSS feed');
-  return [...xml.matchAll(/<item\b[^>]*>([\s\S]*?)<\/item>/gi)].slice(0,60).flatMap(([,item])=>{
+  if(xml.length>4000000||!/<rss\b/i.test(xml)||/<!DOCTYPE|<!ENTITY/i.test(xml))throw Error('Invalid RSS feed');
+  return [...xml.matchAll(/<item\b[^>]*>([\s\S]*?)<\/item>/gi)].flatMap(([,item])=>{
     const get=tag=>decode(item.match(new RegExp('<'+tag+'(?:\\s[^>]*)?>([\\s\\S]*?)<\\/'+tag+'>','i'))?.[1]||'');
     const title=get('title'),link=get('link'),at=Date.parse(get('pubDate'));
     let u;try{u=new URL(link);}catch{return [];}

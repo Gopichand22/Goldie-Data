@@ -13,7 +13,7 @@ export async function fetchMintPrices(s,now,request=fetch){
  s.mintRates ||= {};
  await Promise.all(['gold','silver'].map(async metal=>{
   const old=s.mintRates[metal];if(old?.checkedAt&&now-Date.parse(old.checkedAt)<900000)return;
-  try{const r=await request('https://www.livemint.com/'+metal+'-prices',{signal:AbortSignal.timeout(8000)});if(!r.ok)throw Error();s.mintRates[metal]=parseMintPrices(await r.text(),metal,now);}
-  catch{s.mintRates[metal]={...old,status:'error',checkedAt:iso(now)};}
+  try{const r=await request('https://www.livemint.com/'+metal+'-prices',{signal:AbortSignal.timeout(8000)});if(!r.ok)throw Error('Source HTTP '+r.status);s.mintRates[metal]={...parseMintPrices(await r.text(),metal,now),lastGoodAt:iso(now)};}
+  catch(e){s.mintRates[metal]={...old,status:'error',lastGoodAt:old?.lastGoodAt||(old?.status==='available'?old.checkedAt:null),checkedAt:iso(now),note:/^Source HTTP \d+$/.test(e.message)?e.message:'Source unreachable or extraction failed'};}
  }));
 }
