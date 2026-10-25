@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
 test('dashboard renders fetched INR prices, source cards and populated global charts',async()=>{
  const html=await readFile(new URL('./dist/index.html',import.meta.url),'utf8');
- const nodes=new Map([...html.matchAll(/\bid="([^"]+)"/g)].map(([,id])=>[id,{textContent:'',innerHTML:'',title:'',style:{},classList:{toggle(){}},addEventListener(){},showModal(){},close(){}}]));
+ const nodes=new Map([...html.matchAll(/\bid="([^"]+)"/g)].map(([,id])=>[id,{textContent:'',innerHTML:'',title:'',style:{},classList:{toggle(){}},setAttribute(){},addEventListener(){},showModal(){},close(){}}]));
  const now=Date.now(),at=new Date(now).toISOString();
  const data={config:{},errors:{},spot:{XAU:{currency:'USD',unit:'USD/troy oz',price:4000,at},XAG:{currency:'USD',unit:'USD/troy oz',price:50,at}},spotInr:{XAU:{ouncePrice:380000,price:12217.28,at},XAG:{ouncePrice:4750,price:152.71,at}},jewellers:{khazana:{rates:{gold22k:13070,silver:201},status:'available',checkedAt:at}},news:[],history:[{id:'global/USD/XAU',price:3990,at:new Date(now-60000).toISOString()},{id:'global/USD/XAU',price:4000,at},{id:'global/USD/XAG',price:49,at:new Date(now-60000).toISOString()},{id:'global/USD/XAG',price:50,at}]};
  const context=vm.createContext({document:{getElementById:id=>{assert.ok(nodes.has(id),'Missing DOM element '+id);return nodes.get(id);},addEventListener(){}},Intl,Date,URL,AbortSignal,setInterval(){},fetch:async()=>({ok:true,json:async()=>data})});
@@ -13,6 +13,14 @@ test('dashboard renders fetched INR prices, source cards and populated global ch
  assert.match(nodes.get('globalGoldInr').textContent,/3,80,000/);
  assert.match(nodes.get('globalSilverInr').textContent,/4,750/);
  assert.match(nodes.get('jewellers').innerHTML,/Khazana/);
- assert.match(nodes.get('goldPlot').innerHTML,/<polyline/);
- assert.match(nodes.get('silverPlot').innerHTML,/<polyline/);
+ assert.match(nodes.get('goldPlot').innerHTML,/chart-crosshair/);
+ assert.match(nodes.get('silverPlot').innerHTML,/chart-tooltip/);
+ const overlay={hidden:true,innerHTML:'',style:{},setAttribute(){}};
+ nodes.get('goldPlot').querySelector=selector=>selector==='svg'?{getBoundingClientRect:()=>({left:0,width:600})}:overlay;
+ nodes.get('goldPlot').onpointermove({clientX:532});
+ assert.match(overlay.innerHTML,/4,000/);assert.equal(overlay.hidden,false);
+ nodes.get('goldPlot').onpointerleave();assert.equal(overlay.hidden,true);
+ await nodes.get('goldChartRefresh').onclick();
+ assert.equal(nodes.get('goldChartRefresh').disabled,false);
+ assert.match(nodes.get('goldChartStatus').textContent,/History refreshed/);
 });
