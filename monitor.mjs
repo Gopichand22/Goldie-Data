@@ -1,5 +1,5 @@
 import {CITIES,iso,cityQuote,moved,stale} from './core.mjs';
-import {fedNews,newsData,internationalQuote,spotQuote} from './feeds.mjs';
+import {fedNews,marketNews,mintNews,newsData,internationalQuote,spotQuote} from './feeds.mjs';
 import {fetchJewellers,JEWELLERS} from './jewellers.mjs';
 import {recentImportantNews} from './news-policy.mjs';
 export function createMonitor(s,env,save,request=fetch){
@@ -50,6 +50,12 @@ async function refresh(now){
     const u=new URL('https://newsdata.io/api/1/latest');u.search=new URLSearchParams({apikey:env.NEWSDATA_API_KEY,q:'gold OR silver OR bullion',language:'en',size:'10'});
     s.newsFeeds.NewsData=newsData(await json(u));s.feedChecked.NewsData=iso(now);
   });
+  if(free&&env.MARKET_NEWS_FEEDS!=='false'&&(!s.feedChecked.EconomicTimes||now-Date.parse(s.feedChecked.EconomicTimes)>=15*60000))await task('News/EconomicTimes',async()=>{
+    const r=await request('https://economictimes.indiatimes.com/markets/commodities/rssfeeds/1808152121.cms',{signal:AbortSignal.timeout(8000)});
+    if(!r.ok)throw Error('Provider HTTP '+r.status);
+    const articles=marketNews(await r.text());if(!articles.length)throw Error('Empty market news feed');
+    s.newsFeeds.EconomicTimes=articles;s.feedChecked.EconomicTimes=iso(now);
+  });
   if(env.NEWS_API_KEY&&(!s.lastNews||now-s.lastNews>30*60000))await task('News',async()=>{
     const u=new URL('https://newsapi.org/v2/everything');
     u.search=new URLSearchParams({q:'(gold OR silver) AND (bullion OR inflation OR "interest rates" OR "Federal Reserve" OR rupee)',language:'en',sortBy:'publishedAt',pageSize:'10',searchIn:'title,description'});
@@ -57,6 +63,16 @@ async function refresh(now){
     if(j.status!=='ok'||!Array.isArray(j.articles))throw Error('Invalid news response');
     s.newsFeeds.NewsAPI=j.articles.filter(a=>a.title&&a.url&&/^https?:\/\//.test(a.url)).map(a=>({title:a.title,url:a.url,source:a.source?.name||'News',at:a.publishedAt}));s.lastNews=now;
   });
+  if(free&&env.MARKET_NEWS_FEEDS!=='false')await Promise.all(['markets','money'].map(section=>{
+   const key='Mint/'+section;
+   if(s.feedChecked[key]&&now-Date.parse(s.feedChecked[key])<15*60000)return;
+   return task('News/'+key,async()=>{
+    const r=await request('https://www.livemint.com/rss/'+section,{signal:AbortSignal.timeout(8000)});
+    if(!r.ok)throw Error('Provider HTTP '+r.status);
+    const articles=mintNews(await r.text());if(!articles.length)throw Error('Empty market news feed');
+    s.newsFeeds[key]=articles;s.feedChecked[key]=iso(now);
+   });
+  }));
   s.news=recentImportantNews([...new Map(Object.values(s.newsFeeds).flat().sort((a,b)=>Date.parse(b.at)-Date.parse(a.at)).map(n=>[n.url,n])).values()],now).slice(0,30);
   s.history=s.history.filter(x=>Date.parse(x.at)>now-7*86400000).slice(-20000);
   s.lastPoll=iso(now);

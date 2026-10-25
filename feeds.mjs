@@ -20,16 +20,18 @@ function decode(text){
 }
 // Bounded extraction for the fixed public RSS 2.0 feed, not a general XML evaluator.
 // No external entities, DTDs, scripts, or remote references are executed.
-export function fedNews(xml){
+export function fedNews(xml,{hostname='www.federalreserve.gov',source='Federal Reserve · Monetary policy',category='Monetary policy'}={}){
   if(xml.length>1000000||!/<rss\b/i.test(xml)||/<!DOCTYPE|<!ENTITY/i.test(xml))throw Error('Invalid RSS feed');
-  return [...xml.matchAll(/<item\b[^>]*>([\s\S]*?)<\/item>/gi)].slice(0,30).flatMap(([,item])=>{
+  return [...xml.matchAll(/<item\b[^>]*>([\s\S]*?)<\/item>/gi)].slice(0,60).flatMap(([,item])=>{
     const get=tag=>decode(item.match(new RegExp('<'+tag+'(?:\\s[^>]*)?>([\\s\\S]*?)<\\/'+tag+'>','i'))?.[1]||'');
     const title=get('title'),link=get('link'),at=Date.parse(get('pubDate'));
     let u;try{u=new URL(link);}catch{return [];}
-    if(u.protocol!=='https:'||u.hostname!=='www.federalreserve.gov'||!title||!Number.isFinite(at))return [];
-    return [{title,url:u.href,at:iso(at),source:'Federal Reserve · Monetary policy',category:'Monetary policy',delay:'Publisher RSS; no fixed latency guarantee'}];
+    if(u.protocol!=='https:'||u.hostname!==hostname||!title||!Number.isFinite(at))return [];
+    return [{title,url:u.href,at:iso(at),source,category,delay:'Publisher RSS; no fixed latency guarantee'}];
   });
 }
+export function marketNews(xml){return fedNews(xml,{hostname:'economictimes.indiatimes.com',source:'The Economic Times',category:'Commodities'});}
+export function mintNews(xml){return fedNews(xml,{hostname:'www.livemint.com',source:'Mint',category:'Markets'});}
 export function newsData(j){
   if(j.status!=='success'||!Array.isArray(j.results))throw Error('Invalid news response');
   return j.results.flatMap(a=>{
