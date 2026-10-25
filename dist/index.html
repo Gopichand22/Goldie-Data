@@ -1,50 +1,145 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0c1015"><title>Metals Watch — Indian Jeweller Rates</title><style>
-:root{color-scheme:dark;--bg:#0c1015;--surface:#141b23;--line:#293440;--ink:#ecf1f6;--muted:#a2afbd;--gold:#e9c17a;--green:#83d8af;--amber:#f1bc71}*{box-sizing:border-box}html,body{height:100%;margin:0;overflow:hidden}body{background:var(--bg);color:var(--ink);font:17px/1.5 system-ui,Segoe UI,sans-serif;display:grid;grid-template-rows:64px minmax(0,1fr) 28px}header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 22px;border-bottom:1px solid var(--line)}.brand{font:26px Georgia,serif}.brand span{color:var(--gold)}.subtitle{font:11px system-ui;letter-spacing:2px;margin-left:16px;color:var(--muted)}.statusline{display:flex;gap:12px;align-items:center;font-size:13px}.badge{border:1px solid var(--line);border-radius:5px;padding:5px 9px;color:var(--amber)}.ok{color:var(--green)}.warn{color:var(--amber)}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:currentColor;margin-right:6px}
-main{min-height:0;padding:14px 18px;display:grid;grid-template-columns:minmax(0,2.4fr) minmax(280px,1fr);grid-template-rows:.8fr .9fr 1.3fr;gap:14px}.wall{grid-column:1;grid-row:1/4;display:flex;flex-direction:column;min-height:0}.wallhead{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:12px}.wallhead h1{font:27px Georgia;margin:0}.muted,.meta{color:var(--muted)}.meta{font-size:11px;line-height:1.5}.jewellers{flex:1;min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:12px}
-.card,.panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:17px;min-width:0;min-height:0;overflow:hidden}.card{display:flex;flex-direction:column;border-top:2px solid #9b8051}.cardhead{display:flex;justify-content:space-between;align-items:center;gap:8px}.cardhead a{font:22px Georgia;color:var(--ink);text-decoration:none}.state{font-size:9px;letter-spacing:.6px;color:var(--amber);text-transform:uppercase}.rates{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:auto 0}.rate-label{font-size:11px;color:var(--muted)}.rate{font-size:20px;font-variant-numeric:tabular-nums;color:var(--gold);white-space:nowrap}.card .meta{font-size:10px}.card .source-note{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.panel{display:flex;flex-direction:column}.panelhead{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:9px}h2{font-size:17px;font-weight:550;margin:0}.tag{font-size:10px;letter-spacing:.7px;color:var(--muted)}.telegram{grid-column:2;grid-row:1}.system{grid-column:2;grid-row:2}.news{grid-column:2;grid-row:3}.times{display:flex;gap:5px;flex-wrap:wrap;margin:auto 0 8px}.time{font-size:12px;padding:4px 6px;background:#1d2b31;border:1px solid #34464d;border-radius:4px}.time.next{color:var(--green);border-color:var(--green)}#tgStatus{font-size:14px}.feedrow{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:5px 0;border-bottom:1px solid var(--line)}.systembody{margin:auto 0}#feedError{margin-top:8px}.news-title{appearance:none;border:0;background:none;color:var(--ink);font:inherit;font-size:17px;font-weight:550;padding:0;text-align:left;cursor:pointer}.news-title:hover{color:var(--gold)}.article a{color:var(--ink);text-decoration:none;font-size:16px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.article .meta{margin-bottom:5px}.newsitems{flex:1;display:flex;flex-direction:column;justify-content:space-evenly;gap:10px;min-height:0}.newsfoot{font-size:10px;color:var(--muted);margin-top:8px}.empty{font-size:14px;color:var(--muted);line-height:1.6}footer{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:0 20px;font-size:10px;color:var(--muted);border-top:1px solid var(--line)}
-dialog{width:min(900px,94vw);max-height:85dvh;padding:0;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px}dialog::backdrop{background:#000b;backdrop-filter:blur(4px)}.dialoghead{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface)}.dialoghead h2{font-size:24px}.close{background:#24303b;color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:8px 13px;font:inherit;cursor:pointer}.dialogbody{padding:0 22px 22px}.dialogbody .article{padding:20px 0;border-bottom:1px solid var(--line)}.dialogbody .article a{font-size:20px;display:block}.dialogbody .article .meta{font-size:13px}.dialogbody .window{padding:15px 0;color:var(--muted);font-size:14px}a{color:var(--gold)}a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
-@media(min-width:1600px){.cardhead a{font-size:29px}.rate{font-size:28px}.rate-label{font-size:14px}.card .meta{font-size:13px}.card{padding:24px}h2,.news-title{font-size:23px}.article a{font-size:21px}.meta,.feedrow,#tgStatus{font-size:15px}.time{font-size:15px}}
-@media(max-width:1050px){.subtitle{display:none}main{grid-template-columns:minmax(0,2fr) minmax(240px,1fr);gap:10px;padding:10px}.card,.panel{padding:12px}.jewellers{gap:8px}.cardhead a{font-size:19px}.cardhead{flex-wrap:wrap;gap:1px}.rate{font-size:16px}.rate-label{font-size:10px}.card .meta{font-size:9px}.article a{font-size:14px}.wallhead h1{font-size:22px}.wallhead .meta{font-size:10px}}
-@media(max-width:650px){body{grid-template-rows:48px minmax(0,1fr) 22px}header{padding:0 10px;gap:5px}.brand{font-size:19px}.statusline{font-size:9px;gap:6px}.badge{padding:3px 5px}main{grid-template-columns:1fr 1fr;grid-template-rows:minmax(0,3fr) minmax(0,1fr) minmax(0,1.1fr);padding:7px;gap:7px}.wall{grid-column:1/3;grid-row:1}.wallhead{margin-bottom:7px}.wallhead h1{font-size:18px}.jewellers{gap:6px}.card{padding:7px}.cardhead a{font-size:15px}.state{font-size:7px}.rates{gap:2px}.rate{font-size:12px}.rate-label{font-size:8px}.card .meta{font-size:7px;line-height:1.3}.card .source-note{-webkit-line-clamp:1}.telegram{grid-column:1;grid-row:2}.system{grid-column:2;grid-row:2}.news{grid-column:1/3;grid-row:3}.panel{padding:9px}.feedrow{font-size:10px;padding:2px 0}.meta{font-size:9px}.panelhead{margin-bottom:4px}h2,.news-title{font-size:13px}.tag{font-size:8px}.time{font-size:9px;padding:2px 4px}.times{gap:3px;margin:3px 0}#tgStatus{font-size:10px}#delivery{font-size:8px}#feedError{font-size:8px;margin-top:4px}.article a{font-size:14px;-webkit-line-clamp:2}.article .meta{font-size:8px}.newsfoot{font-size:8px}footer{font-size:8px;padding:0 8px}}
-@media(max-height:650px) and (min-width:651px){body{grid-template-rows:48px minmax(0,1fr) 22px}.card,.panel{padding:10px}.jewellers{gap:7px}.cardhead a{font-size:20px}.rate{font-size:18px}.card .meta{font-size:9px}.wallhead{margin-bottom:6px}.time{font-size:10px;padding:3px}.meta{font-size:10px}.feedrow{font-size:11px;padding:3px}.article a{font-size:14px}}
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0B1017"><title>Metals Watch — Indian Jeweller Rates</title><style>
 
-/* Compact fixed-height source cards, with two lead price blocks. */
-.highlights{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}.highlight{display:flex;flex-direction:column;gap:4px;border:1px solid #5f5135;background:#1e211f;padding:14px 18px;border-radius:7px}.highlight strong{font:36px/1.2 Georgia,serif;color:var(--gold)}.silver-highlight{border-color:#3f5261;background:#182129}.silver-highlight strong{color:#c2d9e7}.wallhead h1{font-size:21px}.wallhead{margin-bottom:10px}.jewellers{flex:0;align-content:start;gap:10px;grid-auto-rows:145px}.card{padding:12px 14px}.cardhead a{font-size:20px}.rate{font-size:18px}.rates{margin:8px 0}.card .meta{font-size:9px}.card .source-note{-webkit-line-clamp:1}.highlight .meta{font-size:11px}
-@media(min-width:1600px){.jewellers{grid-auto-rows:165px}.card{padding:14px 18px}.cardhead a{font-size:23px}.rate{font-size:23px}.card .meta{font-size:11px}.highlight strong{font-size:42px}}
-@media(max-width:1050px){.jewellers{grid-auto-rows:130px}.card{padding:10px}.cardhead a{font-size:18px}.rate{font-size:16px}.highlight{padding:12px}.highlight strong{font-size:31px}}
-@media(max-width:650px){.highlights{gap:7px;margin-bottom:10px}.highlight{padding:9px;gap:2px}.highlight strong{font-size:26px}.highlight .meta{font-size:8px}.wallhead h1{font-size:16px}.jewellers{gap:6px;grid-auto-rows:110px}.card{padding:8px}.cardhead a{font-size:16px}.rate{font-size:13px}.card .meta{font-size:8px}.rates{margin:5px 0}.wall{overflow:auto;scrollbar-width:thin}}
-@media(max-height:650px) and (min-width:651px){.highlights{margin-bottom:9px}.highlight{padding:8px 13px}.highlight strong{font-size:29px}.jewellers{grid-auto-rows:112px}.card{padding:9px 12px}.rates{margin:5px 0}}
-.highlights{grid-template-columns:repeat(4,minmax(0,1fr))}.highlight{padding:12px;min-width:0}.highlight strong{font-size:30px}.highlight .meta{font-size:9px}@media(max-width:1050px){.highlight strong{font-size:25px}.highlight .meta{font-size:8px}}@media(max-width:650px){.highlights{grid-template-columns:repeat(2,minmax(0,1fr))}.highlight{padding:7px}.highlight strong{font-size:23px}}
-
-.inr-value{font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums}.highlight{gap:3px}.global-charts{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;min-height:120px;margin-top:14px}.livechart{background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:12px;display:flex;flex-direction:column;min-width:0;min-height:0}.charthead{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--gold)}.livechart:last-child .charthead{color:#c2d9e7}.plot{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center}.plot svg{width:100%;height:100%;min-height:45px}.chart-range{font-size:9px;display:flex;justify-content:space-between;gap:5px;color:var(--muted)}.jewellers{grid-auto-rows:110px}.card{padding:9px 12px}.rates{margin:6px 0}.cardhead a{font-size:19px}.wallhead{flex-shrink:0}.highlights{flex-shrink:0;margin-bottom:12px}
-@media(min-width:1600px){.jewellers{grid-auto-rows:130px}.inr-value{font-size:18px}.global-charts{min-height:160px}}
-@media(max-height:700px) and (min-width:651px){.jewellers{grid-auto-rows:96px}.cardhead a{font-size:17px}.rate{font-size:16px}.card .meta{font-size:8px}.rates{margin:3px 0}.global-charts{min-height:95px;margin-top:9px}.highlight{padding:8px}.highlight strong{font-size:25px}.inr-value{font-size:13px}}
-@media(max-width:650px){.inr-value{font-size:11px}.global-charts{min-height:150px;gap:7px;margin-top:9px}.livechart{padding:8px}.charthead{font-size:9px}.jewellers{grid-auto-rows:105px}}
-
-/* Four compact source cards per desktop row; chart area takes remaining height. */
-.jewellers{grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:132px;gap:9px}.card{padding:9px 11px}.cardhead{flex-wrap:wrap;gap:2px}.cardhead a{font-size:18px}.state{font-size:8px}.rates{display:flex;flex-direction:column;gap:2px;margin:5px 0}.rates>div{display:flex;align-items:baseline;justify-content:space-between;gap:5px;min-width:0}.rate-label{font-size:10px}.rate{font-size:15px}.card .meta{font-size:8px;line-height:1.35}.card .source-note{white-space:nowrap;text-overflow:ellipsis;display:block;overflow:hidden}
-@media(min-width:1600px){.jewellers{grid-auto-rows:144px}.cardhead a{font-size:21px}.rate{font-size:19px}.rate-label{font-size:12px}.card .meta{font-size:9px}}
-@media(max-width:1000px){.jewellers{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:124px}}
-@media(max-width:650px){.jewellers{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:122px}.cardhead a{font-size:17px}.rate{font-size:14px}}
-@media(max-height:700px) and (min-width:1001px){.jewellers{grid-auto-rows:120px}.card{padding:7px 9px}.rates{gap:0;margin:3px 0}}
-
-/* Explicit wall tracks prevent the source deck collapsing underneath the charts. */
-.wall{display:grid;grid-template-rows:auto auto auto minmax(110px,1fr);gap:10px;overflow:hidden}.highlights,.wallhead{margin:0}.jewellers{flex:none;min-height:0;grid-auto-rows:132px;align-content:start}.global-charts{flex:none;min-height:0;margin:0;height:100%;overflow:hidden}.livechart,.plot{min-height:0;overflow:hidden}.plot svg{display:block;flex:1 1 0;height:0;min-height:0}.highlight .inr-value{font-size:12px;white-space:nowrap}.plot .meta{margin:auto 0}
-@media(min-width:1600px){.jewellers{grid-auto-rows:144px}.highlight .inr-value{font-size:15px}}
-@media(max-height:700px) and (min-width:651px){.wall{grid-template-rows:auto auto auto minmax(70px,1fr);gap:7px}.jewellers{grid-auto-rows:110px}.highlights{margin:0}.highlight .inr-value{font-size:10px}.livechart{padding:8px}}
-@media(max-width:1000px){.jewellers{grid-auto-rows:124px}.highlight .inr-value{font-size:10px}}
-@media(max-width:650px){.wall{display:grid;grid-template-rows:auto auto auto 150px;overflow:auto;gap:8px}.jewellers{grid-auto-rows:122px}.global-charts{height:150px}.highlight .inr-value{font-size:9px}}
-
-.charthead{align-items:flex-start;flex-shrink:0}.chart-value{font:24px Georgia,serif;color:var(--ink);margin-top:3px}.chart-tools{display:flex;align-items:center;gap:9px}.chart-refresh{font:11px system-ui;color:var(--muted);background:#1c2732;border:1px solid #35414f;border-radius:5px;padding:5px 9px;cursor:pointer}.chart-refresh:hover{color:var(--ink);border-color:#8e805e}.chart-refresh:disabled{opacity:.6;cursor:wait}.chart-status{font-size:9px;color:var(--muted);margin-bottom:3px;min-height:14px}.chart-delta{font-size:11px;border-radius:4px;padding:3px 6px;background:#18332c}.chart-delta.up{color:#87d8ae}.chart-delta.down{background:#35252b;color:#f2a9ac}.chart-canvas{position:relative;flex:1;min-height:0;overflow:hidden}.chart-canvas svg{position:absolute;inset:0;width:100%;height:100%;touch-action:pan-y}.price-grid{stroke:#33404d;stroke-width:1;stroke-dasharray:3 5;vector-effect:non-scaling-stroke}.price-axis{position:absolute;right:0;top:9%;bottom:10%;width:11%;display:flex;flex-direction:column;justify-content:space-between;font-size:8px;color:#95a4b4;pointer-events:none;text-align:right}.chart-crosshair{stroke:#8193a5;stroke-width:1;stroke-dasharray:4 4;vector-effect:non-scaling-stroke}.chart-tooltip{position:absolute;top:6px;z-index:2;pointer-events:none;background:#0c121dee;border:1px solid #4a5b70;box-shadow:0 4px 15px #0006;padding:7px 10px;border-radius:6px;white-space:nowrap}.chart-tooltip[hidden]{display:none}.chart-tooltip strong{display:block;font-size:14px;color:var(--ink)}.chart-tooltip small{font-size:10px;font-weight:400;color:var(--muted)}.chart-tooltip span{display:block;font-size:10px;color:var(--muted);margin-top:2px}.plot:focus-visible{outline:1px solid var(--gold);outline-offset:2px}.chart-range{margin-top:5px;flex-shrink:0}
-@media(max-width:650px){.chart-tools{gap:4px}.chart-refresh{font-size:9px;padding:3px 5px}.chart-value{font-size:18px}.chart-delta{font-size:9px}.chart-status{font-size:8px}.chart-range{font-size:7px}.price-axis{font-size:7px}.chart-tooltip{padding:5px}.chart-tooltip strong{font-size:12px}}
-.highlights{grid-template-columns:repeat(6,minmax(0,1fr));gap:9px}.highlight{padding:10px}.highlight strong{font-size:26px}.highlight .meta{font-size:8px;line-height:1.4}.highlight a{text-decoration:none}.highlight .inr-value{font-size:10px;white-space:normal}@media(min-width:1600px){.highlight strong{font-size:33px}.highlight .meta{font-size:10px}.highlight .inr-value{font-size:12px}}@media(max-width:1050px){.highlights{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:650px){.highlights{grid-template-columns:repeat(2,minmax(0,1fr))}.highlight strong{font-size:24px}}
-.telegram-test-controls{display:flex;align-items:center;gap:10px;margin-top:9px}.telegram-test-controls button{white-space:nowrap}.telegram-test-controls .meta{font-size:10px;line-height:1.3}@media(max-width:650px){.telegram-test-controls{gap:5px;margin-top:4px}.telegram-test-controls .meta{font-size:8px}}
+:root {
+ color-scheme: dark;
+ --bg:#0B1017; --surface:#151C25; --elevated:#1B2530; --line:#283443;
+ --gold:#E7BD67; --silver:#B4CEDF; --ink:#F1F5F9; --muted:#9AAABD;
+ --green:#24B47E; --negative:#EF6464; --amber:#E7BD67;
+ --gap:8px;
+}
+* { box-sizing:border-box; }
+html,body { width:100%;height:100%;margin:0; }
+body { height:100dvh;overflow:hidden;background:var(--bg);color:var(--ink);font:12px/1.4 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;display:grid;grid-template-rows:46px minmax(0,1fr) 22px;font-variant-numeric:tabular-nums; }
+button { font:inherit;cursor:pointer; }
+a { color:var(--gold); }
+button:disabled { opacity:.6;cursor:wait; }
+a:focus-visible,button:focus-visible,.plot:focus-visible { outline:2px solid var(--gold);outline-offset:3px; }
+header { display:flex;justify-content:space-between;align-items:center;gap:12px;padding:0 14px;border-bottom:1px solid var(--line);background:#101720; }
+.brand { font-size:19px;font-weight:650;letter-spacing:-.5px;white-space:nowrap; }
+.brand>span:first-child { color:var(--gold); }
+.subtitle { font-size:10px;font-weight:500;letter-spacing:1.8px;margin-left:16px;color:var(--muted); }
+.statusline { display:flex;align-items:center;gap:14px;font-size:11px; }
+.badge { border:1px solid #51452e;border-radius:4px;padding:4px 8px;color:var(--gold);font-size:10px;letter-spacing:.3px; }
+.ok { color:var(--green); }.warn { color:var(--amber); }
+.meta,.muted { color:var(--muted); }.meta { font-size:10px;line-height:1.4; }
+ .dashboard { min-height:0;min-width:0;padding:10px 12px;display:grid;grid-template-rows:96px minmax(380px,.95fr) minmax(170px,1fr);gap:var(--gap); }
+.market-zone,.monitor-zone,.retailer-zone,.operations-zone,.analysis-zone { min-width:0;min-height:0; }
+.highlights { display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--gap);height:100%; }
+.highlight { min-width:0;border:1px solid var(--line);border-top:2px solid #8c7342;background:var(--surface);border-radius:5px;padding:9px 11px;display:flex;flex-direction:column;justify-content:center;gap:4px; }
+.silver-highlight { border-top-color:#668498; }
+.highlight>.meta:first-child { font-size:10px;letter-spacing:.4px; }
+.highlight a { text-decoration:none; }.highlight a:hover { color:var(--ink);text-decoration:underline; }
+.highlight strong { font-size:24px;line-height:1.1;font-weight:600;color:var(--gold);letter-spacing:-.6px; }
+.silver-highlight strong { color:var(--silver); }
+.inr-value { font-size:11px;line-height:1.4;color:var(--ink);white-space:normal; }
+.highlight .meta { font-size:10px; }
+.monitor-zone { display:grid;grid-template-columns:minmax(0,69fr) minmax(0,31fr);gap:var(--gap); }
+.retailer-zone { display:grid;grid-template-rows:25px minmax(0,1fr);gap:6px; }
+.wallhead { display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0; }
+.wallhead h1 { font-size:14px;font-weight:600;margin:0;letter-spacing:.1px; }
+.wallhead>.meta { font-size:10px; }
+.jewellers { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(146px,1fr);gap:var(--gap);min-width:0;min-height:0;align-content:stretch; }
+.card { min-width:0;min-height:0;padding:8px 9px;border:1px solid var(--line);border-radius:5px;background:var(--surface);display:flex;flex-direction:column;gap:2px; }
+.cardhead { display:flex;justify-content:space-between;align-items:center;gap:5px;min-width:0;margin-bottom:2px; }
+.cardhead a { font-size:14px;line-height:1.2;font-weight:600;color:var(--ink);text-decoration:none; }
+.cardhead a:hover { color:var(--gold); }
+.state { font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:.3px;white-space:nowrap; }
+.rates { display:flex;flex-direction:column;gap:1px;margin:0 0 3px; }
+.rates>div { display:flex;justify-content:space-between;align-items:baseline;gap:7px; }
+.rate-label { font-size:11px;color:var(--muted); }.rate { font-size:18px;line-height:1;font-weight:550;color:var(--gold);white-space:nowrap;letter-spacing:-.2px; }
+.card .meta { font-size:10px;line-height:1.35;overflow-wrap:anywhere; }
+.card .source-note { display:block;white-space:normal;overflow:visible;text-overflow:clip;-webkit-line-clamp:unset; }
+.operations-zone { display:grid;grid-template-rows:minmax(0,1fr) minmax(0,1fr);gap:var(--gap); }
+.panel,.livechart { min-width:0;min-height:0;border:1px solid var(--line);border-radius:5px;background:var(--surface);padding:10px 12px;display:flex;flex-direction:column; }
+.panelhead { display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px; }
+h2 { font-size:14px;font-weight:600;margin:0; }
+.tag { font-size:10px;letter-spacing:.6px;color:var(--muted); }
+.times { display:flex;flex-wrap:wrap;gap:5px;margin:0 0 6px; }
+.time { background:var(--elevated);border:1px solid var(--line);padding:3px 7px;font-size:11px;border-radius:3px; }
+.time.next { border-color:#32775d;color:#74dcb3; }
+#tgStatus { font-size:12px;line-height:1.4; }
+#delivery { margin-top:2px; }
+.telegram-test-controls { display:flex;align-items:center;gap:8px;margin-top:7px;min-height:27px; }
+.telegram-test-controls button { white-space:nowrap;flex-shrink:0; }
+.telegram-test-controls .meta { font-size:10px;line-height:1.35;overflow-wrap:anywhere; }
+.systembody { display:grid;grid-template-columns:1fr 1fr;gap:4px 14px; }
+.feedrow { display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px solid var(--line);font-size:11px; }
+#feedError { margin-top:6px;font-size:10px;line-height:1.4; }
+.analysis-zone { display:grid;grid-template-columns:minmax(0,34.5fr) minmax(0,34.5fr) minmax(0,31fr);gap:var(--gap); }
+.charthead { display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px; }
+.charthead>div:first-child>span { font-size:11px;font-weight:600;letter-spacing:.6px;color:var(--gold); }
+.livechart:nth-child(2) .charthead>div:first-child>span { color:var(--silver); }
+.chart-value { font-size:22px;font-weight:550;line-height:1.15;margin-top:3px;letter-spacing:-.4px; }
+.chart-tools { display:flex;align-items:center;gap:6px; }
+.chart-refresh,.close { background:var(--elevated);color:var(--muted);border:1px solid #354456;border-radius:4px;padding:5px 8px;font-size:11px; }
+.chart-refresh:hover,.close:hover { color:var(--ink);border-color:#89764f; }
+.chart-delta { font-size:11px;padding:3px 5px;border-radius:3px;white-space:nowrap; }
+.chart-delta.up { color:#7ee3b9;background:#133128; }.chart-delta.down { color:#f79595;background:#352128; }
+.chart-status { font-size:10px;line-height:1.4;color:var(--muted);margin-bottom:5px;min-height:14px; }
+.plot { min-height:0;flex:1;display:flex;flex-direction:column;justify-content:center; }
+.chart-canvas { position:relative;flex:1;min-height:0; }
+.chart-canvas svg { position:absolute;inset:0;width:100%;height:100%;touch-action:pan-y; }
+.price-grid { stroke:var(--line);stroke-width:1;stroke-dasharray:3 5;vector-effect:non-scaling-stroke; }
+.price-axis { position:absolute;right:0;top:9%;bottom:10%;width:11%;display:flex;flex-direction:column;justify-content:space-between;color:var(--muted);font-size:10px;pointer-events:none;text-align:right; }
+.chart-crosshair { stroke:#8193a5;stroke-width:1;stroke-dasharray:4 4;vector-effect:non-scaling-stroke; }
+.chart-range { display:flex;justify-content:space-between;gap:5px;margin-top:6px;font-size:10px;line-height:1.35;color:var(--muted);flex-shrink:0; }
+.chart-tooltip { position:absolute;top:6px;z-index:2;pointer-events:none;background:#0B1017;border:1px solid #50627b;padding:7px 10px;border-radius:4px;white-space:nowrap;box-shadow:0 3px 10px #0005; }
+.chart-tooltip[hidden] { display:none; }.chart-tooltip strong { display:block;font-size:14px; }.chart-tooltip small { color:var(--muted);font-size:10px;font-weight:400; }.chart-tooltip span { display:block;color:var(--muted);font-size:10px;margin-top:2px; }
+.news-title { appearance:none;border:0;background:none;color:var(--ink);font-size:14px;font-weight:600;padding:0;text-align:left; }
+.news-title:hover { color:var(--gold); }.newsitems { flex:1;min-height:0;display:flex;flex-direction:column;justify-content:flex-start;gap:10px;padding-top:5px; }
+.article .meta { margin-bottom:7px;line-height:1.5;overflow-wrap:anywhere; }
+.article a { color:var(--ink);font-size:13px;font-weight:500;line-height:1.6;text-decoration:none;display:block;white-space:normal;overflow:visible; }
+.article a:hover { color:var(--gold);text-decoration:underline; }.newsfoot { font-size:10px;line-height:1.4;color:var(--muted);margin-top:8px; }
+.empty { font-size:12px;color:var(--muted);line-height:1.6; }
+footer { display:flex;justify-content:space-between;align-items:center;gap:12px;padding:0 14px;border-top:1px solid var(--line);font-size:10px;color:var(--muted); }
+dialog { width:min(860px,94vw);max-height:85dvh;padding:0;background:var(--surface);color:var(--ink);border:1px solid #435267;border-radius:7px; }
+dialog::backdrop { background:#000b; }
+.dialoghead { display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface); }
+.dialoghead h2 { font-size:18px; }.dialogbody { padding:0 20px 20px; }.dialogbody .article { padding:17px 0;border-bottom:1px solid var(--line); }.dialogbody .article a { font-size:16px; }.dialogbody .article .meta { font-size:11px; }.dialogbody .window { padding:14px 0;color:var(--muted);font-size:12px; }
+@media(min-width:1600px) {
+ body { grid-template-rows:52px minmax(0,1fr) 24px; }
+ .dashboard { padding:12px 14px;grid-template-rows:112px minmax(354px,.9fr) minmax(230px,1fr);--gap:10px; }
+ .highlight strong { font-size:24px; }.highlight { padding:12px 14px; }.highlight .meta { font-size:11px; }.inr-value { font-size:12px; }
+ .card { padding:12px;gap:5px; }.card .meta { font-size:11px; }.cardhead a { font-size:15px; }.rate-label { font-size:12px; }.rate { font-size:20px; }
+ .panel,.livechart { padding:12px 14px; }.feedrow,#tgStatus { font-size:12px; }.article a { font-size:14px; }.article .meta { font-size:11px; }.chart-value { font-size:24px; }.systembody { gap:7px 18px; }
+}
+@media(max-width:1100px) {
+ .subtitle { display:none; }.dashboard { grid-template-rows:112px minmax(345px,1fr) minmax(210px,1fr); }
+ .monitor-zone { grid-template-columns:minmax(0,66fr) minmax(0,34fr); }.jewellers { grid-template-columns:repeat(3,minmax(0,1fr)); }
+ .systembody { grid-template-columns:1fr;gap:0; }.feedrow { padding:2px 0;font-size:10px; }.card { padding:8px; }.rate { font-size:17px; }
+ .chart-tools { gap:4px; }.chart-refresh { padding:4px 6px; }
+}
+@media(max-width:900px), (max-height:620px) {
+ html,body { height:auto;min-height:100%;overflow:auto; }body { display:block; }header { min-height:48px; }
+ .dashboard { display:flex;flex-direction:column;padding:10px;gap:10px; }
+ .highlights { height:auto;grid-template-columns:repeat(3,minmax(0,1fr)); }.highlight { min-height:102px; }
+ .monitor-zone { display:flex;flex-direction:column;gap:10px; }.retailer-zone { display:block; }.wallhead { margin-bottom:8px; }
+ .jewellers { grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:auto; }.card { min-height:160px; }
+ .operations-zone { grid-template-columns:1fr 1fr;grid-template-rows:auto;gap:10px; }.panel { min-height:165px; }
+ .analysis-zone { grid-template-columns:1fr 1fr; }.livechart { height:260px; }.analysis-zone .news { grid-column:1/-1;min-height:180px; }
+ footer { min-height:32px;flex-wrap:wrap;padding:7px 12px; }
+}
+@media(max-width:560px) {
+ .brand { font-size:17px; }.statusline { gap:7px;font-size:10px; }.badge { font-size:9px; }
+ .highlights { grid-template-columns:repeat(2,minmax(0,1fr)); }.highlight strong { font-size:23px; }
+ .wallhead { align-items:flex-start;flex-direction:column;gap:3px; }.jewellers { grid-template-columns:repeat(2,minmax(0,1fr)); }
+ .operations-zone,.analysis-zone { display:flex;flex-direction:column;gap:10px; }.livechart { min-height:250px; }
+ .card { min-height:180px; }.cardhead { flex-wrap:wrap; }.systembody { grid-template-columns:1fr 1fr;gap:4px 10px; }
+ .chart-range { font-size:9px; }.article a { font-size:14px; }
+}
+@media(prefers-reduced-motion:no-preference) { button,a { transition:color .12s,border-color .12s,background-color .12s; } }
 </style></head><body>
 <header><div class="brand"><span>◈</span> Metals Watch <span class="subtitle">INDIAN JEWELLER RATE MONITOR</span></div><div class="statusline"><div class="badge" id="health">Connecting</div><time id="clock">IST</time></div></header>
-<main><section class="wall"><div class="highlights"><div class="highlight"><span class="meta">KHAZANA · 22K GOLD / GRAM</span><strong id="khazanaGold">—</strong><span class="meta" id="khazanaGoldTime">Waiting for source</span></div><div class="highlight silver-highlight"><span class="meta">KHAZANA · SILVER / GRAM</span><strong id="khazanaSilver">—</strong><span class="meta" id="khazanaSilverTime">Waiting for source</span></div><div class="highlight"><span class="meta">GLOBAL GOLD · USD / TROY OZ</span><strong id="globalGold">—</strong><span class="inr-value" id="globalGoldInr">INR — / troy oz</span><span class="meta" id="globalGoldTime">Waiting for source</span></div><div class="highlight silver-highlight"><span class="meta">GLOBAL SILVER · USD / TROY OZ</span><strong id="globalSilver">—</strong><span class="inr-value" id="globalSilverInr">INR — / troy oz</span><span class="meta" id="globalSilverTime">Waiting for source</span></div><div class="highlight"><a class="meta" href="https://www.livemint.com/gold-prices" target="_blank" rel="noopener noreferrer">MINT · INDIA GOLD / GRAM</a><strong id="mintGold">—</strong><span class="inr-value" id="mintGold22">24K gold</span><span class="meta" id="mintGoldTime">Waiting for source</span></div><div class="highlight silver-highlight"><a class="meta" href="https://www.livemint.com/silver-prices" target="_blank" rel="noopener noreferrer">MINT · INDIA SILVER / GRAM</a><strong id="mintSilver">—</strong><span class="meta" id="mintSilverTime">Waiting for source</span></div></div><div class="wallhead"><h1>Indian gold & silver rates</h1><span class="meta">₹ / gram · official website sources</span></div><div class="jewellers" id="jewellers"></div><section class="global-charts"><div class="livechart"><div class="charthead"><div><span>GLOBAL GOLD</span><div class="chart-value" id="goldChartValue">—</div></div><div class="chart-tools"><span class="meta" id="goldChange">USD / troy oz</span><button class="chart-refresh" id="goldChartRefresh" aria-label="Refresh gold chart" title="Reload latest saved price history">↻ Refresh</button></div></div><div class="chart-status" id="goldChartStatus" aria-live="polite">Live captures · USD / troy ounce</div><div class="plot" id="goldPlot"></div></div><div class="livechart"><div class="charthead"><div><span>GLOBAL SILVER</span><div class="chart-value" id="silverChartValue">—</div></div><div class="chart-tools"><span class="meta" id="silverChange">USD / troy oz</span><button class="chart-refresh" id="silverChartRefresh" aria-label="Refresh silver chart" title="Reload latest saved price history">↻ Refresh</button></div></div><div class="chart-status" id="silverChartStatus" aria-live="polite">Live captures · USD / troy ounce</div><div class="plot" id="silverPlot"></div></div></section></section>
-<section class="panel telegram"><div class="panelhead"><h2>Telegram delivery</h2><span class="tag">DAILY · IST</span></div><div class="times" id="times"></div><div id="tgStatus">Not connected</div><div class="meta" id="delivery"></div><div class="telegram-test-controls"><button class="chart-refresh" id="testTelegram">Test Telegram</button><span class="meta" id="telegramTestResult" role="status"></span></div></section>
+<main class="dashboard" aria-label="Metals Watch market terminal">
+<section class="market-zone" aria-label="Market indicators"><div class="highlights"><div class="highlight"><span class="meta">KHAZANA · 22K GOLD / GRAM</span><strong id="khazanaGold">—</strong><span class="meta" id="khazanaGoldTime">Waiting for source</span></div><div class="highlight silver-highlight"><span class="meta">KHAZANA · SILVER / GRAM</span><strong id="khazanaSilver">—</strong><span class="meta" id="khazanaSilverTime">Waiting for source</span></div><div class="highlight"><span class="meta">GLOBAL GOLD · USD / TROY OZ</span><strong id="globalGold">—</strong><span class="inr-value" id="globalGoldInr">INR — / troy oz</span><span class="meta" id="globalGoldTime">Waiting for source</span></div><div class="highlight silver-highlight"><span class="meta">GLOBAL SILVER · USD / TROY OZ</span><strong id="globalSilver">—</strong><span class="inr-value" id="globalSilverInr">INR — / troy oz</span><span class="meta" id="globalSilverTime">Waiting for source</span></div><div class="highlight"><a class="meta" href="https://www.livemint.com/gold-prices" target="_blank" rel="noopener noreferrer">MINT · INDIA GOLD / GRAM</a><strong id="mintGold">—</strong><span class="inr-value" id="mintGold22">24K gold</span><span class="meta" id="mintGoldTime">Waiting for source</span></div><div class="highlight silver-highlight"><a class="meta" href="https://www.livemint.com/silver-prices" target="_blank" rel="noopener noreferrer">MINT · INDIA SILVER / GRAM</a><strong id="mintSilver">—</strong><span class="meta" id="mintSilverTime">Waiting for source</span></div></div></section>
+<section class="monitor-zone" aria-label="Retailers and monitoring">
+<section class="retailer-zone" aria-label="Indian jeweller rates"><div class="wallhead"><h1>Indian gold & silver rates</h1><span class="meta">₹ / gram · official website sources</span></div><div class="jewellers" id="jewellers"></div></section>
+<aside class="operations-zone" aria-label="Delivery and source monitoring"><section class="panel telegram"><div class="panelhead"><h2>Telegram delivery</h2><span class="tag">DAILY · IST</span></div><div class="times" id="times"></div><div id="tgStatus">Not connected</div><div class="meta" id="delivery"></div><div class="telegram-test-controls"><button class="chart-refresh" id="testTelegram">Test Telegram</button><span class="meta" id="telegramTestResult" role="status"></span></div></section>
 <section class="panel system"><div class="panelhead"><h2>Source health</h2><span class="tag">AUTO SYNC</span></div><div class="systembody" id="connections"></div><div class="meta warn" id="feedError" role="status"></div></section>
-<section class="panel news"><div class="panelhead"><button class="news-title" id="openNews" aria-haspopup="dialog">Market & policy intelligence ↗</button></div><div class="newsitems" id="news"></div><div class="newsfoot" id="newsCount">Today & yesterday · IST · material events only</div></section></main>
+</aside>
+</section>
+<section class="analysis-zone" aria-label="Global price charts and market intelligence"><div class="livechart"><div class="charthead"><div><span>GLOBAL GOLD</span><div class="chart-value" id="goldChartValue">—</div></div><div class="chart-tools"><span class="meta" id="goldChange">USD / troy oz</span><button class="chart-refresh" id="goldChartRefresh" aria-label="Refresh gold chart" title="Reload latest saved price history">↻ Refresh</button></div></div><div class="chart-status" id="goldChartStatus" aria-live="polite">Live captures · USD / troy ounce</div><div class="plot" id="goldPlot"></div></div><div class="livechart"><div class="charthead"><div><span>GLOBAL SILVER</span><div class="chart-value" id="silverChartValue">—</div></div><div class="chart-tools"><span class="meta" id="silverChange">USD / troy oz</span><button class="chart-refresh" id="silverChartRefresh" aria-label="Refresh silver chart" title="Reload latest saved price history">↻ Refresh</button></div></div><div class="chart-status" id="silverChartStatus" aria-live="polite">Live captures · USD / troy ounce</div><div class="plot" id="silverPlot"></div></div><section class="panel news"><div class="panelhead"><button class="news-title" id="openNews" aria-haspopup="dialog">Market & policy intelligence ↗</button></div><div class="newsitems" id="news"></div><div class="newsfoot" id="newsCount">Today & yesterday · IST · material events only</div></section></section>
+</main>
 <footer><span id="lastUpdate">Waiting for backend</span><span>Jewellers: INR/g · International spot: USD/troy oz</span></footer>
 <dialog id="newsDialog" aria-labelledby="newsDialogTitle"><div class="dialoghead"><h2 id="newsDialogTitle">Market & policy intelligence</h2><button class="close" id="closeNews" aria-label="Close news dialog">Close ✕</button></div><div class="dialogbody"><div class="window" id="newsWindow"></div><div id="allNews"></div></div></dialog>
 <script>
