@@ -1,16 +1,11 @@
-import {recentImportantNews} from './news-policy.mjs';
 export const CITIES = ['Nellore', 'Bangalore', 'Hyderabad'];
-export const HOURS = [8, 10, 14, 16, 18];
 export const iso = t => new Date(t).toISOString();
 export function ist(t) {
   const d = new Date(+new Date(t) + 330 * 60000);
   return {date:d.toISOString().slice(0,10), hour:d.getUTCHours(), minute:d.getUTCMinutes()};
 }
-export function dueSlots(now, started, sent={}) {
-  const p=ist(now);
-  return HOURS.map(h=>({id:`${p.date}/${h}`,at:Date.parse(`${p.date}T${String(h).padStart(2,'0')}:00:00+05:30`)}))
-    .filter(x=>x.at<=now && x.at>=started && !sent[x.id]);
-}
+// One price comparison per IST clock hour, e.g. 2026-10-31/14.
+export function hourSlot(t) {const p=ist(t);return `${p.date}/${p.hour}`;}
 export function finitePrice(x) {return typeof x==='number' && Number.isFinite(x) && x>0;}
 export function cityQuote(j, city, metal, now) {
   if(j.success!==true || j.city?.toLowerCase()!==city.toLowerCase()) throw Error('Provider city/response mismatch');
@@ -25,26 +20,31 @@ export function cityQuote(j, city, metal, now) {
       gstIncluded:j.metadata?.gst_included ?? null,validation:j.metadata?.validation_passed ?? null,indicative:true};
   });
 }
-export function moved(previous, current, percent) {
-  return percent>0 && finitePrice(previous) && Math.abs((current-previous)/previous*100)>=percent;
-}
 export function stale(q, now=Date.now()) {return !q?.at || now-Date.parse(q.at)>30*60000;}
 const money=x=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:2}).format(x);
-export function summary(s, slot, now) {
-  const lines=[`Metals Watch · ${slot} IST`, 'Indian jeweller website rates · INR per gram'];
-  const entries=Object.values(s.jewellers||{});
-  if(!entries.length)lines.push('Jeweller rates unavailable; waiting for source checks.');
-  for(const entry of entries){
-    lines.push('\n'+entry.name+' · '+entry.status);
-    for(const [metal,label] of [['gold24k','24K'],['gold22k','22K'],['silver','Silver']]){
-      const value=entry.rates?.[metal];
-      lines.push(label+': '+(finitePrice(value)?money(value):'unavailable'));
-    }
-    lines.push('Checked: '+(entry.checkedAt||'unknown'));
-    lines.push(entry.publishedDate?'Source date: '+entry.publishedDate:'Source rate date not published; freshness unverified');
-    if(entry.status!=='available')lines.push('Last-known rate may be stale.');
+const METALS={gold24k:'24K gold',gold22k:'22K gold',silver:'Silver'};
+// Jeweller rates, Mint India rates and gold/silver ETF FoF NAVs that are currently valid.
+export function trackedPrices(s) {
+  const out={};
+  for(const [id,e] of Object.entries(s.jewellers||{}))if(e.status==='available')
+    for(const [m,p] of Object.entries(e.rates||{}))if(finitePrice(p))out['jeweller/'+id+'/'+m]={label:(e.name||id)+' '+(METALS[m]||m),price:p,unit:'/g'};
+  for(const e of Object.values(s.mintRates||{}))if(e.status==='available')
+    for(const [m,p] of Object.entries(e.rates||{}))if(finitePrice(p))out['mint/'+m]={label:'Mint India '+(METALS[m]||m),price:p,unit:'/g'};
+  for(const [code,f] of Object.entries(s.funds||{}))if(f.status==='available'&&finitePrice(f.nav))
+    out['etf/'+code]={label:f.name+' NAV',price:f.nav,unit:'/unit'};
+  return out;
+}
+// Only prices seen on both checks count; a source going offline is not a price change.
+export function priceChanges(previous={}, current={}) {
+  return Object.entries(current).filter(([k,c])=>finitePrice(previous[k]?.price)&&previous[k].price!==c.price)
+    .map(([id,c])=>({id,...c,from:previous[id].price}));
+}
+export function changeMessage(slot, changes) {
+  const lines=[`Metals Watch · price change · ${slot} IST`];
+  for(const c of changes){
+    const diff=c.price-c.from,sign=diff>0?'▲ +':'▼ −';
+    lines.push(`${c.label}: ${money(c.from)} → ${money(c.price)}${c.unit} (${sign}${money(Math.abs(diff))}, ${sign}${Math.abs(diff/c.from*100).toFixed(2)}%)`);
   }
-  lines.push('\nGST, making charges and branch applicability must be verified with each jeweller.');
-  for(const n of recentImportantNews(s.news||[],now).slice(0,2))lines.push('\n'+n.title+'\n'+n.url);
+  lines.push('\nWebsite rates; GST, making charges and branch applicability must be verified with each jeweller.');
   return lines.join('\n').slice(0,4000);
 }

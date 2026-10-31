@@ -28,10 +28,9 @@ The private Sites preview serves layout and disconnected/sample states only. It 
 
 ## Timing, cost and reliability
 
-- Telegram summaries: daily 08:00, 10:00, 14:00, 16:00, 18:00 **Asia/Kolkata**. Each includes all cities and two news links. A fresh price poll runs before composing. Timing is checked every 15 seconds; fetch and delivery latency may delay messages.
+- Telegram: **only on change**. Once per Asia/Kolkata hour, jeweller rates, Mint India rates and gold/silver ETF FoF NAVs are compared with the previous hourly check; a message listing old → new prices is sent only if something differs.
 - Default city polling: five minutes (`POLL_SECONDS=300`, minimum 60). Six city/metal requests per poll is approximately 51,840 requests per 30 days, plus extra polls for summaries. Credit costs differ by endpoint; the provider's silver credit documentation is inconsistent, so confirm before paying. This is not an unlimited free feed.
 - Browser refresh reads cached state every 30 seconds without spending a price-provider request for each visitor. Sources older than 30 minutes are flagged stale. Fetch failures retain last known data and show errors.
-- Optional movement alerts: set a positive `ALERT_PERCENT`; `0` disables them. Both rises and drops from the last alerted price qualify. Only non-stale city quotes without failed validation qualify. Baselines persist.
 - The persistent outbox retries failed sends with exponential backoff, respecting Telegram retry-after. Sent schedule slots are normally deduplicated. A crash or timeout after Telegram accepts a message but before local acknowledgement can cause a duplicate; Telegram provides no idempotency key.
 - Same-day slots missed during a temporary pause are caught up while the process remains running. Restart does not generate retroactive summaries for time when the server was off. Pending summaries from previous days expire. Every market tick and outage cannot be guaranteed; a licensed streaming feed is needed to capture ticks between polls.
 - No independent outage monitor is configured. An offline host cannot report its own outage.

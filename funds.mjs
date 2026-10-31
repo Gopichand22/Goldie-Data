@@ -27,14 +27,8 @@ export function parseFund(j,fund,now=Date.now()){
  const latest=history.at(-1),previous=history.at(-2);
  return {...fund,nav:latest.nav,navDate:latest.date,previousNav:previous?.nav??null,previousDate:previous?.date??null,change:previous?latest.nav-previous.nav:null,changePercent:previous?(latest.nav/previous.nav-1)*100:null,history,unit:'INR/unit',source:'MFAPI',authoritativeReference:'AMFI',referenceUrl:'https://www.amfiindia.com/',url:'https://api.mfapi.in/mf/'+fund.code,kind:'Published daily NAV; not a real-time trading price'};
 }
-// MFAPI publishes six ingestion times. Check a few minutes afterwards, not every monitor tick.
-// These are provider checks, never asserted NAV publication timestamps.
-export function nextFundFetch(now){
- const windows=[3*60+12,5*60+8,10*60+8,14*60+8,18*60+8,21*60+8];
- const date=day(now);
- for(const minute of windows){const at=Date.parse(date+'T'+String(Math.floor(minute/60)).padStart(2,'0')+':'+String(minute%60).padStart(2,'0')+':00+05:30');if(at>now)return at;}
- return Date.parse(day(now+86400000)+'T03:12:00+05:30');
-}
+// Checked hourly for the hourly price-change comparison, not every monitor tick.
+export const FUND_CHECK_MS=3600000;
 export function fundHealth(fund,now=Date.now()){
  const oldDate=!!fund.navDate&&now-Date.parse(fund.navDate+'T00:00:00+05:30')>7*86400000;
  return {id:'NAV/'+fund.code,name:fund.name,lastSuccess:fund.lastSuccess||null,sourceAt:fund.navDate||null,sourceTimeKind:'date',status:fund.error?'error':!fund.lastSuccess||now-Date.parse(fund.lastSuccess)>36*3600000||oldDate?'stale':'fresh',error:fund.error||null,note:'Published NAV, INR per unit. MFAPI transport; AMFI authoritative reference. NAV date is date-only; no publication clock time supplied.'};
@@ -59,7 +53,7 @@ export async function fetchFunds(s,now,request=fetch){
     data=await get('');
     if(data.navDate<latest.navDate||(data.navDate===latest.navDate&&data.nav!==latest.nav))throw Error('Latest and historical NAV responses disagree');
    }
-   s.funds[key]={...data,checkedAt:iso(now),lastSuccess:iso(now),status:'available',error:null,failures:0,nextFetch:Math.max(nextFundFetch(now),now+maxAge*1000)};
+   s.funds[key]={...data,checkedAt:iso(now),lastSuccess:iso(now),status:'available',error:null,failures:0,nextFetch:now+Math.max(FUND_CHECK_MS-60000,maxAge*1000)};
    delete s.errors['NAV/'+key];
   }catch(e){
    const failures=(old?.failures||0)+1;

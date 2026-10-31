@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {FUNDS,parseFund,fetchFunds,fundHealth,nextFundFetch,navDate} from './funds.mjs';
+import {FUNDS,parseFund,fetchFunds,fundHealth,FUND_CHECK_MS,navDate} from './funds.mjs';
 const now=Date.parse('2026-10-26T10:10:00+05:30');
 function payload(fund,rows=[{date:'23-10-2026',nav:'26.94420'},{date:'22-10-2026',nav:'27.28710'}]){return {status:'SUCCESS',meta:{scheme_code:fund.code,scheme_name:fund.schemeName,fund_house:'UTI Mutual Fund',isin_growth:fund.isin,isin_div_reinvestment:null},data:rows};}
 const response=j=>({ok:true,json:async()=>j});
@@ -44,9 +44,9 @@ test('latest/history mismatch and regressing dates cannot overwrite a valid NAV'
  await fetchFunds(s,now+1000,async url=>response(payload(FUNDS.find(f=>url.includes(String(f.code))),[{date:'22-10-2026',nav:'27'}])));
  assert.equal(s.funds[150714].nav,old.nav);assert.match(s.funds[150714].error,/older NAV/);
 });
-test('fund schedule aligns to provider ingestion windows across IST midnight and freshness tolerates weekends',()=>{
- assert.equal(new Date(nextFundFetch(Date.parse('2026-10-26T10:04:00+05:30'))).toISOString(),'2026-10-26T04:38:00.000Z');
- assert.equal(new Date(nextFundFetch(Date.parse('2026-10-26T23:59:00+05:30'))).toISOString(),'2026-10-26T21:42:00.000Z');
+test('ETF NAVs are rechecked within the hour and freshness tolerates weekends',async()=>{
+ const s={errors:{}};await fetchFunds(s,now,async url=>response(payload(FUNDS.find(f=>url.includes(String(f.code))))));
+ for(const f of Object.values(s.funds)){assert.ok(f.nextFetch>now);assert.ok(f.nextFetch<now+FUND_CHECK_MS);}
  const f={...parseFund(payload(FUNDS[0]),FUNDS[0],now),lastSuccess:new Date(now).toISOString()};
  const h=fundHealth(f,now);assert.equal(h.status,'fresh');assert.equal(h.sourceAt,'2026-10-23');assert.equal(h.sourceTimeKind,'date');
  assert.equal(fundHealth(f,now+40*3600000).status,'stale');

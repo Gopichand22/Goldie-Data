@@ -10,12 +10,21 @@ function fakeDb(state=emptyState()){
   if(name==='metals_release'){locked=false;return true;}
  }};
 }
-test('cloud run persists state across cold starts and sends each IST slot once',async()=>{
- const now=Date.parse('2026-10-25T08:01:00+05:30'),s=emptyState();s.monitorStartedAt='2026-10-25T02:00:00Z';
- const db=fakeDb(s),env={FREE_FEEDS:'false',JEWELLER_FEEDS:'false',TELEGRAM_BOT_TOKEN:'fake',TELEGRAM_CHAT_ID:'123'};let sent=0;
- const request=async()=>{assert.ok(db.value.outbox.length>0,'persist before Telegram send');sent++;return {ok:true,json:async()=>({ok:true})};};
- await runCloud(env,db,now,request);await runCloud(env,db,now+60000,request);
- assert.equal(sent,1);assert.ok(db.value.sent['2026-10-25/8']);assert.equal(db.value.outbox.length,0);
+test('cloud run compares prices once per IST hour and messages only on a difference',async()=>{
+ const now=Date.parse('2026-10-25T08:01:00+05:30'),s=emptyState();
+ s.jewellers={khazana:{name:'Khazana',status:'available',rates:{gold22k:11000},checkedAt:new Date(now).toISOString()}};
+ const db=fakeDb(s),env={FREE_FEEDS:'false',JEWELLER_FEEDS:'false',TELEGRAM_BOT_TOKEN:'fake',TELEGRAM_CHAT_ID:'123'};const texts=[];
+ const request=async(url,o)=>{assert.ok(db.value.outbox.length>0,'persist before Telegram send');texts.push(JSON.parse(o.body).text);return {ok:true,json:async()=>({ok:true})};};
+ await runCloud(env,db,now,request);
+ assert.equal(texts.length,0,'first check only records a baseline');
+ await runCloud(env,db,now+3600000,request);
+ assert.equal(texts.length,0,'unchanged price sends nothing');
+ await db.rpc('metals_save',{p_state:{...db.value,jewellers:{khazana:{...db.value.jewellers.khazana,rates:{gold22k:11080}}}}});
+ await runCloud(env,db,now+3600000+60000,request);
+ assert.equal(texts.length,0,'same hour is not checked twice');
+ await runCloud(env,db,now+7200000,request);await runCloud(env,db,now+7200000+60000,request);
+ assert.equal(texts.length,1);assert.match(texts[0],/10:00 IST/);assert.match(texts[0],/Khazana 22K gold/);
+ assert.ok(db.value.sent['2026-10-25/10/change']);assert.equal(db.value.outbox.length,0);
 });
 test('failed Telegram delivery persists retry and retries on a later invocation',async()=>{
  const now=Date.now(),s=emptyState();s.outbox=[{id:'retry',text:'test',tries:0,next:0}];

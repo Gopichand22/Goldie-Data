@@ -1,6 +1,6 @@
-import {iso,moved} from './core.mjs';
+import {iso,hourSlot,trackedPrices,priceChanges,changeMessage} from './core.mjs';
 import {createIntegrations} from './integrations.mjs';
-import {fetchJewellers,JEWELLERS} from './jewellers.mjs';
+import {fetchJewellers} from './jewellers.mjs';
 import {fetchMintPrices} from './mint-prices.mjs';
 import {fetchFunds} from './funds.mjs';
 export function createMonitor(s,env,save,request=fetch){
@@ -17,21 +17,17 @@ async function refresh(now){
   if(config.spot)await integrations.metals(now);
   if(config.metals)await fetchJewellers(s,now,request,Math.max(300,Number(env.JEWELLER_POLL_SECONDS)||900)*1000);
   if(config.metals)await fetchMintPrices(s,now,request);
-  for(const site of JEWELLERS){
-    const entry=s.jewellers?.[site.id];if(entry?.status!=='available')continue;
-    for(const [metal,price] of Object.entries(entry.rates)){
-      const id='jeweller/'+site.id+'/'+metal,anchor=s.anchors[id];
-      if(anchor===undefined)s.anchors[id]=price;
-      else if(moved(anchor,price,Number(env.ALERT_PERCENT)||0)&&config.telegram){
-        enqueue('move/'+id+'/'+entry.checkedAt+'/'+price,site.name+' '+metal+': INR '+price+'/g\\nWebsite rate; GST/location may be unspecified.\\n'+site.url);
-        s.anchors[id]=price;
-      }
-    }
-  }
   if(config.news)await integrations.news(now);
   if(config.funds)await fetchFunds(s,now,request);
   s.history=s.history.filter(x=>Date.parse(x.at)>now-7*86400000).slice(-20000);
   s.lastPoll=iso(now);
+}
+// Once per IST hour: compare against the previous hour and message only when a price differs.
+function hourly(now){
+  const slot=hourSlot(now);if(s.priceCheckSlot===slot)return;
+  const current=trackedPrices(s),changes=priceChanges(s.lastPrices,current);
+  if(changes.length&&config.telegram)enqueue(slot+'/change',changeMessage(slot.split('/')[1]+':00',changes));
+  s.lastPrices={...s.lastPrices,...current};s.priceCheckSlot=slot;
 }
 async function deliver(now){
   if(!config.telegram)return;
@@ -45,6 +41,6 @@ async function deliver(now){
   }
 }
 
-return {config,refresh,deliver,enqueue,event};
+return {config,refresh,hourly,deliver,enqueue,event};
 }
 

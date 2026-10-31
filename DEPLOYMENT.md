@@ -44,7 +44,6 @@ Set these production environment variables:
 | `JEWELLER_POLL_SECONDS` | Website interval, defaults to 900; minimum 300 |
 | `FREE_FEEDS` | Defaults to true; free Fed news only |
 | `NEWSDATA_API_KEY` | Optional broader free news, 12-hour delay |
-| `ALERT_PERCENT` | Optional, defaults to 0 (disabled) |
 
 Keep all values server-side; do not prefix them with `NEXT_PUBLIC_` or put them into HTML. Jeweller HTML sources need no keys. News keys are optional. Supabase and the two authentication secrets are required for the cloud version. Sign in with username **metals** and `APP_PASSWORD`. Source HTML is served behind authentication rather than exposed as a static public index.
 
@@ -58,7 +57,7 @@ Enable **Supabase Cron**, **pg_net**, and **Vault** in your project. Create thes
 
 Run `supabase/schedule.sql` in the Supabase SQL editor. It schedules an authenticated POST to Vercel `/api/cron` every minute. The app checks Indian jeweller websites every 15 minutes by default, and free Fed news every 15 minutes. The minute ticks also check Telegram slots and pending retries. No Vercel Cron configuration or persistent process is required. Monitor usage on both platforms; this schedule alone produces roughly 43,200 function calls per 30 days.
 
-Your summaries use Asia/Kolkata time: **08:00, 10:00, 14:00, 16:00, 18:00**. Scheduler, fetch and delivery latency can delay messages. The first successful run initializes the schedule start; activate it before the first summary you want. Subsequent cold starts retain the start time, queue and sent-slot records. Missed same-day summaries can catch up; prior-day pending summaries expire.
+Telegram messages are sent **only when a price changes**. Once per Asia/Kolkata hour, jeweller rates, Mint India rates and gold/silver ETF FoF NAVs are compared with the previous hourly check. The first successful run only records a baseline. Cold starts retain the last prices, queue and sent records. Undelivered change messages from a previous IST day expire.
 
 An atomic database lease prevents overlapping monitor invocations. It expires after 180 seconds if an invocation is killed. Vercel's monitor function has a 120-second duration setting. Pending sends are persisted before Telegram calls and retried. A timeout/crash after Telegram accepted a send can still produce a duplicate; exactly-once delivery is not guaranteed.
 
