@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {runCloud,emptyState,protect,publicStatus,database} from './lib/cloud.mjs';
+import {runCloud,refreshStatus,emptyState,protect,publicStatus,database} from './lib/cloud.mjs';
 function fakeDb(state=emptyState()){
  let value=structuredClone(state),locked=false;const calls=[];
- return {calls,get value(){return value;},read:async()=>structuredClone(value),rpc:async(name,args)=>{
+ return {calls,get value(){return value;},read:async()=>structuredClone(value),save:async(token,state)=>{value=structuredClone(state);return true;},rpc:async(name,args)=>{
   calls.push(name);
   if(name==='metals_claim'){if(locked)return false;locked=true;return true;}
   if(name==='metals_save'){value=structuredClone(args.p_state);return true;}
@@ -58,7 +58,33 @@ test('public status omits message queue and private deduplication state',()=>{
 });
 test('database transport sends privileged key server-side and rejects errors',async()=>{
  const env={SUPABASE_URL:'https://example.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'server-key'};
- let called=false;const db=database(env,async(url,options)=>{called=true;assert.equal(url.pathname,'/rest/v1/rpc/metals_read');assert.equal(options.headers.apikey,'server-key');return {ok:true,json:async()=>({})};});
- assert.deepEqual(await db.read(),emptyState());assert.equal(called,true);
- await assert.rejects(database(env,async()=>({ok:false})).read());
+ const paths=[];const db=database(env,async(url,options)=>{paths.push(url.pathname);assert.equal(options.headers.apikey,'server-key');return {ok:true,json:async()=>url.pathname.endsWith('metals_version')?1:{}};},{});
+ assert.deepEqual(await db.read(),emptyState());assert.ok(paths.includes('/rest/v1/rpc/metals_read'));
+ await assert.rejects(database(env,async()=>({ok:false}),{}).read());
+});
+test('unchanged state is downloaded once; a new version or own save refreshes the warm copy',async()=>{
+ const env={SUPABASE_URL:'https://example.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'server-key'};
+ let version=1,stored={lastPoll:'a'},downloads=0;
+ const request=async(url,options)=>{const name=url.pathname.split('/').pop(),args=JSON.parse(options.body);let out;
+  if(name==='metals_version')out=version;
+  if(name==='metals_read'){downloads++;out=stored;}
+  if(name==='metals_commit'){if(args.p_token==='lost')out=null;else{stored=args.p_state;out=++version;}}
+  return {ok:true,json:async()=>structuredClone(out)};};
+ const db=database(env,request,{});
+ const first=await db.read();assert.equal(db.cached,false);first.lastPoll='mutated';
+ assert.equal((await db.read()).lastPoll,'a','callers cannot corrupt the warm copy');assert.equal(db.cached,true);assert.equal(downloads,1);
+ const s=await db.read();s.lastPoll='b';assert.equal(await db.save('token',s),true);
+ assert.equal((await db.read()).lastPoll,'b');assert.equal(downloads,1,'own save needs no download');
+ stored={lastPoll:'c'};version++;
+ assert.equal((await db.read()).lastPoll,'c');assert.equal(downloads,2,'foreign write is downloaded');
+ assert.equal(await db.save('lost',s),false);await db.read();assert.equal(downloads,3,'lost lease drops the warm copy');
+});
+test('dashboard refresh runs the monitor on demand, reuses a recent run and survives a failed run',async()=>{
+ const now=Date.parse('2026-10-25T08:01:00+05:30'),db=fakeDb(),env={FREE_FEEDS:'false',JEWELLER_FEEDS:'false'};
+ const first=await refreshStatus(env,db,now);assert.equal(first.lastRunAt,new Date(now).toISOString());assert.equal(first.outbox,undefined);
+ const claims=()=>db.calls.filter(n=>n==='metals_claim').length;assert.equal(claims(),1);
+ await refreshStatus(env,db,now+10000);assert.equal(claims(),1,'recent run reused');
+ await refreshStatus(env,db,now+60000);assert.equal(claims(),2);
+ db.save=async()=>{throw Error('offline');};
+ assert.equal((await refreshStatus(env,db,now+120000)).lastRunAt,new Date(now+60000).toISOString());
 });

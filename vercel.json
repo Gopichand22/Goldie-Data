@@ -5,7 +5,8 @@
   "outputDirectory":"public",
   "functions":{
     "api/dashboard.mjs":{"includeFiles":"dist/index.html"},
-    "api/cron.mjs":{"maxDuration":120}
+    "api/cron.mjs":{"maxDuration":120},
+    "api/refresh.mjs":{"maxDuration":120}
   },
   "rewrites":[{"source":"/","destination":"/api/dashboard"}]
 }

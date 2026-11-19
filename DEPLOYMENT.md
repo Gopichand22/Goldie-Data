@@ -19,7 +19,7 @@ If `.env` already exists, keep it instead of overwriting it. Open http://127.0.0
 ## Supabase database
 
 1. Create a Supabase project.
-2. In its SQL editor, run `supabase/migrations/202610250001_monitor.sql`.
+2. In its SQL editor, run `supabase/migrations/202610250001_monitor.sql`, then `supabase/migrations/202611200001_state_version.sql` (needs Supabase Cron enabled; run it before deploying code that depends on it).
 3. Copy the project URL and the server-side **service_role** key privately. This adapter uses the legacy service_role JWT key, not the public anon/publishable key.
 
 The migration creates one private state row plus RPC functions for reads, lease acquisition, saves and release. RLS is enabled; anon/authenticated roles have no access. Only backend service_role requests may use the RPCs. The row stores seven days of bounded history, latest quotes, news, pending deliveries and deduplication records. This is a single-owner dashboard, not a multi-user system.
@@ -55,7 +55,7 @@ Enable **Supabase Cron**, **pg_net**, and **Vault** in your project. Create thes
 - `metals_cron_secret`: exactly the same value as Vercel's `CRON_SECRET`.
 - If Vercel Deployment Protection is enabled, `metals_vercel_bypass`: its automation bypass secret. This is separate from the endpoint's own authentication.
 
-Run `supabase/schedule.sql` in the Supabase SQL editor. It schedules an authenticated POST to Vercel `/api/cron` every minute. The app checks Indian jeweller websites every 15 minutes by default, and free Fed news every 15 minutes. The minute ticks also check Telegram slots and pending retries. No Vercel Cron configuration or persistent process is required. Monitor usage on both platforms; this schedule alone produces roughly 43,200 function calls per 30 days.
+Run `supabase/schedule.sql` in the Supabase SQL editor. It schedules an authenticated POST to Vercel `/api/cron` once an hour (for the hourly Telegram price-change alert); while the dashboard is open it refreshes prices itself through `/api/refresh` once a minute. Statements below about every-minute ticks and 43,200 calls describe the older schedule. The app checks Indian jeweller websites every 15 minutes by default, and free Fed news every 15 minutes. The minute ticks also check Telegram slots and pending retries. No Vercel Cron configuration or persistent process is required. Monitor usage on both platforms; this schedule alone produces roughly 43,200 function calls per 30 days.
 
 Telegram messages are sent **only when a price changes**. Once per Asia/Kolkata hour, jeweller rates, Mint India rates and gold/silver ETF FoF NAVs are compared with the previous hourly check. The first successful run only records a baseline. Cold starts retain the last prices, queue and sent records. Undelivered change messages from a previous IST day expire.
 

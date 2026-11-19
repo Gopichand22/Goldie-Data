@@ -3,7 +3,9 @@
 -- metals_app_url: https://YOUR-PRODUCTION-DOMAIN.vercel.app
 -- metals_cron_secret: same random CRON_SECRET as Vercel
 -- Optional metals_vercel_bypass: Vercel protection-bypass secret if protection is enabled.
-select cron.schedule('metals-watch-minute-tick','* * * * *',$job$
+-- Hourly is enough for the hourly Telegram price-change alert; the open dashboard fetches
+-- fresh prices itself through /api/refresh. (Job name kept so re-running this replaces the old every-minute schedule.)
+select cron.schedule('metals-watch-minute-tick','1 * * * *',$job$
  select net.http_post(
   url:=rtrim((select decrypted_secret from vault.decrypted_secrets where name='metals_app_url'),'/')||'/api/cron',
   headers:=jsonb_build_object('Content-Type','application/json','Authorization',
